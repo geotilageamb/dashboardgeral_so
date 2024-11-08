@@ -3,6 +3,7 @@ from dashboard_laudos import show_dashboard as show_dashboard_laudos
 from dashboard_documentos import show_dashboard as show_dashboard_documentos
 from dashboard_pareceres import show_dashboard as show_dashboard_pareceres
 from dashboard_planilhas import show_dashboard as show_dashboard_planilhas
+from dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
 
 def main():
     st.title("Dashboard Supervisão Ocupacional - TED INCRA/UFPR")
