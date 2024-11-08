@@ -14,7 +14,7 @@ def load_data(sheet_name):
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
-    df_docs = load_data(sheet_name='NomeDaAba')  # Substitua 'NomeDaAba' pelo nome real da quinta aba
+    df_docs = load_data(sheet_name='contDocsRecebidos')  # Substitua 'NomeDaAba' pelo nome real da quinta aba
 
     municipios = ['Todos'] + sorted(list(df_docs['Município'].apply(remove_special_chars).unique()))
     assentamentos = ['Todos'] + sorted(list(df_docs['Assentamento'].unique()))
