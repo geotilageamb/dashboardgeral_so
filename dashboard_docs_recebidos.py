@@ -1,21 +1,20 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import unicodedata
 
 # Função para remover caracteres especiais
 def remove_special_chars(text):
+    import unicodedata
     return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
 
 # Função para carregar os dados da planilha gerada
 @st.cache
-def load_data():
-    # Usar o caminho relativo para carregar a planilha
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=4)
+def load_data(sheet_name):
+    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
-    df_docs = load_data()
+    df_docs = load_data(sheet_name='NomeDaAba')  # Substitua 'NomeDaAba' pelo nome real da quinta aba
 
     municipios = ['Todos'] + sorted(list(df_docs['Município'].apply(remove_special_chars).unique()))
     assentamentos = ['Todos'] + sorted(list(df_docs['Assentamento'].unique()))
