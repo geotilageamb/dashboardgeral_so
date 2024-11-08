@@ -11,7 +11,7 @@ def remove_special_chars(text):
 @st.cache
 def load_data():
     # Usar o caminho relativo para carregar a planilha
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=5)
+    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=4)
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
