@@ -10,7 +10,8 @@ def remove_special_chars(text):
 # Função para carregar os dados da planilha gerada
 @st.cache
 def load_data():
-    return pd.read_excel('C:/Users/CoordenaçãodeTidoLag/ufpr.br/Intranet do LAGEAMB - 03_equipeGEOTI/08_automacoes/03_SO/contagemDocs_SO.xlsx')
+    # Carregar a quinta aba pelo índice
+    return pd.read_excel('C:/Users/CoordenaçãodeTidoLag/ufpr.br/Intranet do LAGEAMB - 03_equipeGEOTI/08_automacoes/03_SO/contPGT_contPlanilhas.xlsx', sheet_name=4)
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
