@@ -42,7 +42,7 @@ def main():
     with tab5:
         st.sidebar.title("Filtros - Documentos recebidos")
         # Adicione aqui os filtros específicos para o dashboard de Documentos recebidos
-        show_dashboard_docs_recebdos()
+        show_dashboard_docs_recebidos()
 
 if __name__ == "__main__":
     main()
