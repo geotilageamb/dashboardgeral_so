@@ -40,8 +40,8 @@ def main():
         show_dashboard_planilhas()
 
     with tab5:
-        st.sidebar.title("Filtros - Dpcumentos Recebidos")
-        # Adicione aqui os filtros específicos para o dashboard de Planilhas monitoramento
+        st.sidebar.title("Filtros - Documentos recebidos")
+        # Adicione aqui os filtros específicos para o dashboard de Documentos recebidos
         show_dashboard_docs_recebdos()
 
 if __name__ == "__main__":
