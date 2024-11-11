@@ -15,7 +15,6 @@ def main():
         "Pareceres conclusivos",
         "Planilhas monitoramento",
         "Documentos recebidos"
-        
     ])
 
     # Configuração do menu lateral para cada aba
@@ -23,12 +22,12 @@ def main():
         st.sidebar.title("Filtros - Laudos de supervisão ocupacional")
         # Adicione aqui os filtros específicos para o dashboard de Laudos de supervisão ocupacional
         show_dashboard_laudos()
-            
+
     with tab2:
         st.sidebar.title("Filtros - Documentação PGT")
         # Adicione aqui os filtros específicos para o dashboard de Documentação PGT
         show_dashboard_documentos()
-        
+
     with tab3:
         st.sidebar.title("Filtros - Pareceres conclusivos")
         # Adicione aqui os filtros específicos para o dashboard de Pareceres conclusivos
