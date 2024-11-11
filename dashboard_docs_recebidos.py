@@ -7,14 +7,14 @@ def remove_special_chars(text):
     import unicodedata
     return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
 
-# Função para carregar os dados da planilha gerada
+# Função para carregar os dados da planilha
 @st.cache
-def load_data(sheet_name):
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
+def load_data():
+    return pd.read_excel('contDocsRecebidos.xlsx')
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
-    df_docs = load_data(sheet_name='contDocsRecebidos')  # Certifique-se de que o nome da aba está correto
+    df_docs = load_data()
 
     # Remover caracteres especiais para facilitar a manipulação
     df_docs['Município'] = df_docs['Município'].apply(remove_special_chars)
