@@ -29,11 +29,11 @@ def show_dashboard():
     else:
         objetivos = ['Todos']
 
-    selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento_pgt")
-    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_pgt")
-    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_pgt")
-    selected_nome_t1 = st.sidebar.selectbox("Selecione um nome T1:", nomes_t1, key="nome_t1_pgt")
-    selected_objetivo = st.sidebar.selectbox("Selecione um objetivo:", objetivos, key="objetivo_pgt")
+    selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento_pgt_unique")
+    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_pgt_unique")
+    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_pgt_unique")
+    selected_nome_t1 = st.sidebar.selectbox("Selecione um nome T1:", nomes_t1, key="nome_t1_pgt_unique")
+    selected_objetivo = st.sidebar.selectbox("Selecione um objetivo:", objetivos, key="objetivo_pgt_unique")
 
     if selected_tipo_documento != "Todos":
         df_pgt = df_pgt[df_pgt['Tipo de documento PGT'] == selected_tipo_documento]
