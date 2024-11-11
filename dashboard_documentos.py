@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-@st.cache
+@st.cache_data
 def load_data():
     return pd.read_excel('contPGT.xlsx')
 
@@ -14,8 +14,14 @@ def show_dashboard():
     if 'Objetivo' in df_pgt.columns:
         df_pgt['Objetivo'].fillna('Não especificado', inplace=True)
 
+    # Adiciona a coluna "Município" se não estiver presente
+    if 'Município' not in df_pgt.columns:
+        st.error("A coluna 'Município' não está presente nos dados.")
+        return
+
     tipos_documento = ['Todos'] + sorted(list(df_pgt['Tipo de documento PGT'].unique()))
     assentamentos = ['Todos'] + sorted(list(df_pgt['Assentamento'].unique()))
+    municipios = ['Todos'] + sorted(list(df_pgt['Município'].unique()))
     nomes_t1 = ['Todos'] + sorted(list(df_pgt['Nome T1'].unique()))
 
     if 'Objetivo' in df_pgt.columns:
@@ -25,6 +31,7 @@ def show_dashboard():
 
     selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento_pgt")
     selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_pgt")
+    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_pgt")
     selected_nome_t1 = st.sidebar.selectbox("Selecione um nome T1:", nomes_t1, key="nome_t1_pgt")
     selected_objetivo = st.sidebar.selectbox("Selecione um objetivo:", objetivos, key="objetivo_pgt")
 
@@ -33,6 +40,9 @@ def show_dashboard():
 
     if selected_assentamento != "Todos":
         df_pgt = df_pgt[df_pgt['Assentamento'] == selected_assentamento]
+
+    if selected_municipio != "Todos":
+        df_pgt = df_pgt[df_pgt['Município'] == selected_municipio]
 
     if selected_nome_t1 != "Todos":
         df_pgt = df_pgt[df_pgt['Nome T1'] == selected_nome_t1]
@@ -51,6 +61,14 @@ def show_dashboard():
     st.markdown("### Distribuição dos documentos por assentamento")
     assentamento_data = df_pgt['Assentamento'].value_counts()
     st.bar_chart(assentamento_data)
+
+    st.markdown("### Distribuição dos documentos por município")
+    municipio_data = df_pgt['Município'].value_counts()
+    fig_municipio = px.pie(
+        names=municipio_data.index,
+        values=municipio_data.values,
+    )
+    st.plotly_chart(fig_municipio)
 
     if 'Objetivo' in df_pgt.columns:
         st.markdown("### Distribuição dos documentos por objetivo")
