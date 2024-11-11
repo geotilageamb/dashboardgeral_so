@@ -4,12 +4,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 @st.cache
-def load_data(sheet_name):
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
+def load_data():
+    # Atualize o caminho do arquivo para o novo arquivo
+    return pd.read_excel('contPareceres.xlsx')
 
 def show_dashboard():
     st.header("Pareceres Conclusivos")
-    df_pareceres = load_data(sheet_name='contPareceres')
+    df_pareceres = load_data()
 
     assentamentos = ['Todos'] + sorted(list(df_pareceres['Assentamento'].unique()))
     formatos = ['Todos'] + sorted(list(df_pareceres['Formato'].unique()))
