@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 
 @st.cache
-def load_data(sheet_name):
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
+def load_data():
+    return pd.read_excel('contPlanilhas.xlsx')
 
 def show_dashboard():
     st.header("Planilhas de monitoramento")
-    data_planilhas = load_data(sheet_name='contPlanilhas')
+    data_planilhas = load_data()
 
     st.header("Totais")
     total_planilhas = len(data_planilhas)
@@ -23,3 +23,6 @@ def show_dashboard():
 
     st.header("Distribuição de Abas por Planilha")
     st.bar_chart(data_planilhas.set_index("Nome da Planilha")["Quantidade de Abas"])
+
+if __name__ == "__main__":
+    show_dashboard()
