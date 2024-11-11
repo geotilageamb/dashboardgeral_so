@@ -4,12 +4,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 @st.cache
-def load_data(sheet_name):
-    return pd.read_excel('contPGT_contPlanilhas.xlsx', sheet_name=sheet_name)
+def load_data():
+    return pd.read_excel('contPGT.xlsx')
 
 def show_dashboard():
     st.header("Dashboard de Documentos PGT")
-    df_pgt = load_data(sheet_name='contPGT')
+    df_pgt = load_data()
 
     if 'Objetivo' in df_pgt.columns:
         df_pgt['Objetivo'].fillna('Não especificado', inplace=True)
@@ -88,3 +88,6 @@ def show_dashboard():
         yaxis=dict(range=[0, total_a_atingir])
     )
     st.plotly_chart(fig_progress)
+
+# Chamada para exibir o dashboard
+show_dashboard()
