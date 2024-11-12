@@ -23,7 +23,7 @@ def show_dashboard():
     df['Município'] = df['Município'].apply(remove_special_chars)
 
     # Definir título do aplicativo
-    st.title("Laudos de Supervisão Ocupacional")
+    st.header("Laudos de Supervisão Ocupacional")
 
     # Definir título da tabela com informações gerais sobre os laudos
     st.subheader("Relação de laudos")
