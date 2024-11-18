@@ -51,9 +51,11 @@ def show_dashboard():
     # Gráfico de progresso dos pareceres Padrão
     st.subheader("Progresso dos Pareceres Padrão")
     padrao_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                       (df_pareceres['Andamento'] == 'Em elaboração')].shape[0]
+                                       (df_pareceres['Andamento'] == 'Em elaboração') &
+                                       (df_pareceres['Formato'] == 'PDF')].shape[0]
     padrao_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                    (df_pareceres['Andamento'] == 'Concluído')].shape[0]
+                                    (df_pareceres['Andamento'] == 'Concluído') &
+                                    (df_pareceres['Formato'] == 'PDF')].shape[0]
     total_padrao = 1622
 
     fig_padrao = go.Figure()
@@ -86,9 +88,11 @@ def show_dashboard():
     # Gráfico de progresso dos pareceres de Desbloqueio
     st.subheader("Progresso dos Pareceres de Desbloqueio")
     desbloqueio_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                            (df_pareceres['Andamento'] == 'Em elaboração')].shape[0]
+                                            (df_pareceres['Andamento'] == 'Em elaboração') &
+                                            (df_pareceres['Formato'] == 'PDF')].shape[0]
     desbloqueio_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                         (df_pareceres['Andamento'] == 'Concluído')].shape[0]
+                                         (df_pareceres['Andamento'] == 'Concluído') &
+                                         (df_pareceres['Formato'] == 'PDF')].shape[0]
     total_desbloqueio = 500
 
     fig_desbloqueio = go.Figure()
