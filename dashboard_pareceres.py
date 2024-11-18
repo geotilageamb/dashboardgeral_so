@@ -48,7 +48,8 @@ def show_dashboard():
     with col4:
         st.metric("Desbloqueio", df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'].shape[0])
 
-    # Gráfico de progresso
+    # Gráfico de progresso geral
+    st.subheader("Progresso Geral dos Pareceres")
     pareceres_em_elaboracao = df_pareceres[df_pareceres['Andamento'] == 'Em elaboração'].shape[0]
     pareceres_concluidos = df_pareceres[df_pareceres['Andamento'] == 'Concluído'].shape[0]
     total_a_atingir = 5861
@@ -74,15 +75,49 @@ def show_dashboard():
     ))
     fig_progress.update_layout(
         barmode='stack',
-        title='Progresso dos Pareceres',
         xaxis_title='Status',
         yaxis_title='Quantidade',
         legend_title='Legenda'
     )
     st.plotly_chart(fig_progress)
 
-    # Gráficos em duas colunas
-    col1, col2 = st.columns(2)
+    # Gráfico de progresso dos pareceres de Desbloqueio
+    st.subheader("Progresso dos Pareceres de Desbloqueio")
+    desbloqueio_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
+                                            (df_pareceres['Andamento'] == 'Em elaboração')].shape[0]
+    desbloqueio_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
+                                         (df_pareceres['Andamento'] == 'Concluído')].shape[0]
+    total_desbloqueio = 500
+
+    fig_desbloqueio = go.Figure()
+    fig_desbloqueio.add_trace(go.Bar(
+        name='Em elaboração',
+        x=['Pareceres de Desbloqueio'],
+        y=[desbloqueio_em_elaboracao],
+        marker_color='orange'
+    ))
+    fig_desbloqueio.add_trace(go.Bar(
+        name='Concluídos',
+        x=['Pareceres de Desbloqueio'],
+        y=[desbloqueio_concluidos],
+        marker_color='green'
+    ))
+    fig_desbloqueio.add_trace(go.Bar(
+        name='Faltando',
+        x=['Pareceres de Desbloqueio'],
+        y=[max(0, total_desbloqueio - (desbloqueio_em_elaboracao + desbloqueio_concluidos))],
+        marker_color='lightgrey'
+    ))
+    fig_desbloqueio.update_layout(
+        barmode='stack',
+        xaxis_title='Status',
+        yaxis_title='Quantidade',
+        legend_title='Legenda'
+    )
+    st.plotly_chart(fig_desbloqueio)
+
+    # Gráficos em três colunas
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         st.subheader("Distribuição por Assentamento")
@@ -95,6 +130,17 @@ def show_dashboard():
         st.plotly_chart(fig_assentamento)
 
     with col2:
+        st.subheader("Distribuição por Andamento")
+        andamento_data = df_pareceres['Andamento'].value_counts()
+        fig_andamento = px.pie(
+            names=andamento_data.index,
+            values=andamento_data.values,
+            title='Distribuição por Andamento',
+            color_discrete_map={'Em elaboração': 'orange', 'Concluído': 'green'}
+        )
+        st.plotly_chart(fig_andamento)
+
+    with col3:
         st.subheader("Distribuição por Tipo")
         tipo_data = df_pareceres['Tipo'].value_counts()
         fig_tipo = px.pie(
