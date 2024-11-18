@@ -48,38 +48,40 @@ def show_dashboard():
     with col4:
         st.metric("Desbloqueio", df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'].shape[0])
 
-    # Gráfico de progresso geral
-    st.subheader("Progresso Geral dos Pareceres")
-    pareceres_em_elaboracao = df_pareceres[df_pareceres['Andamento'] == 'Em elaboração'].shape[0]
-    pareceres_concluidos = df_pareceres[df_pareceres['Andamento'] == 'Concluído'].shape[0]
-    total_a_atingir = 5861
+    # Gráfico de progresso dos pareceres Padrão
+    st.subheader("Progresso dos Pareceres Padrão")
+    padrao_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
+                                       (df_pareceres['Andamento'] == 'Em elaboração')].shape[0]
+    padrao_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
+                                    (df_pareceres['Andamento'] == 'Concluído')].shape[0]
+    total_padrao = 1622
 
-    fig_progress = go.Figure()
-    fig_progress.add_trace(go.Bar(
+    fig_padrao = go.Figure()
+    fig_padrao.add_trace(go.Bar(
         name='Em elaboração',
-        x=['Pareceres'],
-        y=[pareceres_em_elaboracao],
+        x=['Pareceres Padrão'],
+        y=[padrao_em_elaboracao],
         marker_color='orange'
     ))
-    fig_progress.add_trace(go.Bar(
+    fig_padrao.add_trace(go.Bar(
         name='Concluídos',
-        x=['Pareceres'],
-        y=[pareceres_concluidos],
+        x=['Pareceres Padrão'],
+        y=[padrao_concluidos],
         marker_color='green'
     ))
-    fig_progress.add_trace(go.Bar(
+    fig_padrao.add_trace(go.Bar(
         name='Faltando',
-        x=['Pareceres'],
-        y=[max(0, total_a_atingir - (pareceres_em_elaboracao + pareceres_concluidos))],
+        x=['Pareceres Padrão'],
+        y=[max(0, total_padrao - (padrao_em_elaboracao + padrao_concluidos))],
         marker_color='lightgrey'
     ))
-    fig_progress.update_layout(
+    fig_padrao.update_layout(
         barmode='stack',
         xaxis_title='Status',
         yaxis_title='Quantidade',
         legend_title='Legenda'
     )
-    st.plotly_chart(fig_progress)
+    st.plotly_chart(fig_padrao)
 
     # Gráfico de progresso dos pareceres de Desbloqueio
     st.subheader("Progresso dos Pareceres de Desbloqueio")
