@@ -116,20 +116,10 @@ def show_dashboard():
     )
     st.plotly_chart(fig_desbloqueio)
 
-    # Gráficos em três colunas
-    col1, col2, col3 = st.columns(3)
+    # Primeiro row com dois gráficos lado a lado
+    col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Distribuição por Assentamento")
-        assentamento_data = df_pareceres['Assentamento'].value_counts()
-        fig_assentamento = px.pie(
-            names=assentamento_data.index,
-            values=assentamento_data.values,
-            title='Distribuição por Assentamento'
-        )
-        st.plotly_chart(fig_assentamento)
-
-    with col2:
         st.subheader("Distribuição por Andamento")
         andamento_data = df_pareceres['Andamento'].value_counts()
         fig_andamento = px.pie(
@@ -140,7 +130,7 @@ def show_dashboard():
         )
         st.plotly_chart(fig_andamento)
 
-    with col3:
+    with col2:
         st.subheader("Distribuição por Tipo")
         tipo_data = df_pareceres['Tipo'].value_counts()
         fig_tipo = px.pie(
@@ -150,6 +140,16 @@ def show_dashboard():
             color_discrete_map={'Padrão': 'lightblue', 'Desbloqueio': 'coral'}
         )
         st.plotly_chart(fig_tipo)
+
+    # Gráfico de assentamentos em uma nova linha
+    st.subheader("Distribuição por Assentamento")
+    assentamento_data = df_pareceres['Assentamento'].value_counts()
+    fig_assentamento = px.pie(
+        names=assentamento_data.index,
+        values=assentamento_data.values,
+        title='Distribuição por Assentamento'
+    )
+    st.plotly_chart(fig_assentamento)
 
     # Tabela cruzada
     st.subheader("Análise Detalhada")
