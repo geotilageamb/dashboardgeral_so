@@ -13,8 +13,9 @@ def main():
         "Laudos de supervisão ocupacional",
         "Documentação PGT",
         "Pareceres conclusivos",
-        "Planilhas monitoramento",
-        "Documentos recebidos"
+        "Documentos recebidos",
+        "Planilhas monitoramento"
+
     ])
 
     # Configuração do menu lateral para cada aba
@@ -29,14 +30,14 @@ def main():
     with tab3:
         st.sidebar.title("Filtros - Pareceres conclusivos")
         show_dashboard_pareceres()
-
+        
     with tab4:
-        st.sidebar.title("Filtros - Planilhas monitoramento")
-        show_dashboard_planilhas()
-
-    with tab5:
         st.sidebar.title("Filtros - Documentos recebidos")
         show_dashboard_docs_recebidos()
+
+    with tab5:
+        st.sidebar.title("Filtros - Planilhas monitoramento")
+        show_dashboard_planilhas()
 
 if __name__ == "__main__":
     main()
