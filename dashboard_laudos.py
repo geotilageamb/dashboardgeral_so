@@ -25,6 +25,33 @@ def show_dashboard():
     # Definir título do aplicativo
     st.header("Laudos de Supervisão Ocupacional")
 
+    # Calcular total de laudos por modalidade
+    total_vistoria = len(df[df['Modalidade'] == 'VISTORIA IN LOCO'])
+    total_mutirao = len(df[df['Modalidade'] == 'MUTIRÃO'])
+
+    # Meta total para cada modalidade
+    meta_vistoria = 4739
+    meta_mutirao = 2746
+
+    # Calcular percentuais
+    percentual_vistoria = (total_vistoria / meta_vistoria) * 100
+    percentual_mutirao = (total_mutirao / meta_mutirao) * 100
+
+    # Exibir barras de progresso
+    st.subheader("Progresso dos Laudos")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Vistoria In Loco**")
+        st.progress(min(percentual_vistoria/100, 1.0))
+        st.write(f"{total_vistoria} de {meta_vistoria} laudos ({percentual_vistoria:.1f}%)")
+
+    with col2:
+        st.markdown("**Mutirão**")
+        st.progress(min(percentual_mutirao/100, 1.0))
+        st.write(f"{total_mutirao} de {meta_mutirao} laudos ({percentual_mutirao:.1f}%)")
+
     # Definir título da tabela com informações gerais sobre os laudos
     st.subheader("Relação de laudos")
 
@@ -108,3 +135,6 @@ def show_dashboard():
     # Exibir quadro com os totais
     st.subheader("Quantidade de laudos por tipo")
     st.write(total_por_tipo_laudo)
+
+if __name__ == "__main__":
+    show_dashboard()
