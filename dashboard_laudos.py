@@ -22,6 +22,9 @@ def show_dashboard():
     df['Município'] = df['Município'].fillna('Desconhecido')
     df['Município'] = df['Município'].apply(remove_special_chars)
 
+    # Converter coluna de data
+    df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y')
+
     # Definir título do aplicativo
     st.header("Laudos de Supervisão Ocupacional")
 
@@ -104,18 +107,66 @@ def show_dashboard():
     # Filtrar por data
     start_date = st.sidebar.date_input("Data inicial:", start_date, key="start_date")
     end_date = st.sidebar.date_input("Data final:", end_date, key="end_date")
-    df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y').dt.date
-    df = df[(df['Data'] >= start_date) & (df['Data'] <= end_date)]
+    df = df[(df['Data'].dt.date >= start_date) & (df['Data'].dt.date <= end_date)]
 
     # Exibir tabela interativa
     st.write(df)
 
-    # Exibir gráfico interativo
+    # Gráfico de pizza - Distribuição por município
+    st.subheader("Distribuição de Laudos por Município")
+    municipio_data = df['Município'].value_counts()
+    fig_municipio = px.pie(
+        names=municipio_data.index,
+        values=municipio_data.values,
+        title='Distribuição dos Laudos por Município'
+    )
+    st.plotly_chart(fig_municipio)
+
+    # Gráfico de barras por mês com seletor de ano
+    st.subheader("Quantidade de Laudos por Mês")
+
+    # Adicionar seletor de ano
+    anos_disponiveis = sorted(df['Data'].dt.year.unique())
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button('2022', key='btn_2022'):
+            ano_selecionado = 2022
+    with col2:
+        if st.button('2023', key='btn_2023'):
+            ano_selecionado = 2023
+    with col3:
+        if st.button('2024', key='btn_2024'):
+            ano_selecionado = 2024
+
+    # Definir ano padrão se nenhum botão foi pressionado
+    if 'ano_selecionado' not in locals():
+        ano_selecionado = datetime.now().year
+
+    # Filtrar dados pelo ano selecionado
+    df_ano = df[df['Data'].dt.year == ano_selecionado]
+
+    # Criar gráfico de barras mensal
+    laudos_por_mes = df_ano.groupby(df_ano['Data'].dt.month).size().reindex(range(1, 13), fill_value=0)
+
+    # Converter números dos meses para nomes
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    laudos_por_mes.index = meses
+
+    fig_mensal = px.bar(
+        x=laudos_por_mes.index,
+        y=laudos_por_mes.values,
+        title=f'Quantidade de Laudos por Mês em {ano_selecionado}',
+        labels={'x': 'Mês', 'y': 'Quantidade de Laudos'}
+    )
+    st.plotly_chart(fig_mensal)
+
+    # Gráfico de barras - tipo de laudo
     st.subheader("Gráfico de barras - tipo de laudo")
     chart_data = df['Tipo de Laudo'].value_counts()
     st.bar_chart(chart_data)
 
-    # Gráfico de pizza
+    # Gráfico de pizza - tipo de laudo
     st.subheader("Gráfico de pizza - tipo de laudo")
     pie_chart_data = df['Tipo de Laudo'].value_counts()
     fig = px.pie(names=pie_chart_data.index, values=pie_chart_data.values, title='Distribuição dos Laudos')
