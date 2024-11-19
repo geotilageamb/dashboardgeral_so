@@ -47,6 +47,32 @@ def show_dashboard():
     if selected_objetivo != "Todos" and 'Objetivo' in filtered_df.columns:
         filtered_df = filtered_df[filtered_df['Objetivo'] == selected_objetivo]
 
+    # Barras de Progresso
+    st.subheader("Progresso da Documentação")
+
+    # Calcular totais e percentuais
+    solicitacoes_atual = len(df_pgt[df_pgt['Tipo de documento PGT'] == 'Solicitação de documentação complementar'])
+    segundos_relatorios_atual = len(df_pgt[df_pgt['Tipo de documento PGT'].str.contains('2º Relatório', na=False)])
+
+    total_solicitacoes = 674
+    total_segundos_relatorios = 337
+
+    percentual_solicitacoes = (solicitacoes_atual / total_solicitacoes) * 100
+    percentual_relatorios = (segundos_relatorios_atual / total_segundos_relatorios) * 100
+
+    # Criar duas colunas para as barras de progresso
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Solicitação de documentação complementar**")
+        st.progress(min(percentual_solicitacoes/100, 1.0))
+        st.write(f"{solicitacoes_atual} de {total_solicitacoes} documentos ({percentual_solicitacoes:.1f}%)")
+
+    with col2:
+        st.markdown("**Segundos Relatórios de Conformidade**")
+        st.progress(min(percentual_relatorios/100, 1.0))
+        st.write(f"{segundos_relatorios_atual} de {total_segundos_relatorios} relatórios ({percentual_relatorios:.1f}%)")
+
     # Gráficos principais
     st.markdown("### Distribuição dos documentos por tipo")
     tipo_documento_data = filtered_df['Tipo de documento PGT'].value_counts()
@@ -72,61 +98,6 @@ def show_dashboard():
         st.markdown("### Distribuição dos documentos por objetivo")
         objetivo_data = filtered_df['Objetivo'].value_counts()
         st.bar_chart(objetivo_data)
-
-    # Barras de progresso
-    st.markdown("### Progresso de Documentação")
-
-    # Progresso de solicitação de documentação complementar
-    st.subheader("Solicitação de documentação complementar")
-    solicitacoes_atual = df_pgt[df_pgt['Tipo de documento PGT'] == 'Solicitação de documentação complementar'].shape[0]
-    total_solicitacoes = 674
-
-    fig_progress_sol = go.Figure()
-    fig_progress_sol.add_trace(go.Bar(
-        name='Concluídos',
-        x=['Solicitações'],
-        y=[solicitacoes_atual],
-        marker_color='green'
-    ))
-    fig_progress_sol.add_trace(go.Bar(
-        name='A atingir',
-        x=['Solicitações'],
-        y=[max(0, total_solicitacoes - solicitacoes_atual)],
-        marker_color='lightgrey'
-    ))
-    fig_progress_sol.update_layout(
-        barmode='stack',
-        xaxis_title='Status',
-        yaxis_title='Número de Documentos',
-        yaxis=dict(range=[0, total_solicitacoes])
-    )
-    st.plotly_chart(fig_progress_sol)
-
-    # Progresso dos segundos relatórios de conformidade
-    st.subheader("Segundos Relatórios de Conformidade")
-    segundos_relatorios_atual = df_pgt[df_pgt['Tipo de documento PGT'].str.contains('2º Relatório', na=False)].shape[0]
-    total_segundos_relatorios = 337
-
-    fig_progress_rel = go.Figure()
-    fig_progress_rel.add_trace(go.Bar(
-        name='Concluídos',
-        x=['Segundos Relatórios'],
-        y=[segundos_relatorios_atual],
-        marker_color='blue'
-    ))
-    fig_progress_rel.add_trace(go.Bar(
-        name='A atingir',
-        x=['Segundos Relatórios'],
-        y=[max(0, total_segundos_relatorios - segundos_relatorios_atual)],
-        marker_color='lightgrey'
-    ))
-    fig_progress_rel.update_layout(
-        barmode='stack',
-        xaxis_title='Status',
-        yaxis_title='Número de Documentos',
-        yaxis=dict(range=[0, total_segundos_relatorios])
-    )
-    st.plotly_chart(fig_progress_rel)
 
     # Tabelas de dados
     st.markdown("### Relação geral da documentação")
@@ -159,5 +130,5 @@ def show_dashboard():
             f"{percentual}%"
         )
 
-# Chamada para exibir o dashboard
-show_dashboard()
+if __name__ == "__main__":
+    show_dashboard()
