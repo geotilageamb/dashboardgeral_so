@@ -48,79 +48,45 @@ def show_dashboard():
     with col4:
         st.metric("Desbloqueio", df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'].shape[0])
 
-    # Gráfico de progresso dos pareceres Padrão
-    st.subheader("Progresso dos Pareceres Padrão")
-    padrao_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                       (df_pareceres['Andamento'] == 'Em elaboração') &
-                                       (df_pareceres['Formato'] == 'PDF')].shape[0]
-    padrao_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                    (df_pareceres['Andamento'] == 'Concluído') &
-                                    (df_pareceres['Formato'] == 'PDF')].shape[0]
+    # Barras de Progresso
+    st.subheader("Progresso dos Pareceres")
+
+    # Calcular totais e percentuais para Pareceres Padrão
+    padrao_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
+                                           (df_pareceres['Andamento'] == 'Em elaboração') &
+                                           (df_pareceres['Formato'] == 'PDF')])
+    padrao_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
+                                        (df_pareceres['Andamento'] == 'Concluído') &
+                                        (df_pareceres['Formato'] == 'PDF')])
     total_padrao = 1622
+    total_atual_padrao = padrao_em_elaboracao + padrao_concluidos
+    percentual_padrao = (total_atual_padrao / total_padrao) * 100
 
-    fig_padrao = go.Figure()
-    fig_padrao.add_trace(go.Bar(
-        name='Em elaboração',
-        x=['Pareceres Padrão'],
-        y=[padrao_em_elaboracao],
-        marker_color='orange'
-    ))
-    fig_padrao.add_trace(go.Bar(
-        name='Concluídos',
-        x=['Pareceres Padrão'],
-        y=[padrao_concluidos],
-        marker_color='green'
-    ))
-    fig_padrao.add_trace(go.Bar(
-        name='Faltando',
-        x=['Pareceres Padrão'],
-        y=[max(0, total_padrao - (padrao_em_elaboracao + padrao_concluidos))],
-        marker_color='lightgrey'
-    ))
-    fig_padrao.update_layout(
-        barmode='stack',
-        xaxis_title='Status',
-        yaxis_title='Quantidade',
-        legend_title='Legenda'
-    )
-    st.plotly_chart(fig_padrao)
-
-    # Gráfico de progresso dos pareceres de Desbloqueio
-    st.subheader("Progresso dos Pareceres de Desbloqueio")
-    desbloqueio_em_elaboracao = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                            (df_pareceres['Andamento'] == 'Em elaboração') &
-                                            (df_pareceres['Formato'] == 'PDF')].shape[0]
-    desbloqueio_concluidos = df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                         (df_pareceres['Andamento'] == 'Concluído') &
-                                         (df_pareceres['Formato'] == 'PDF')].shape[0]
+    # Calcular totais e percentuais para Pareceres de Desbloqueio
+    desbloqueio_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
+                                                 (df_pareceres['Andamento'] == 'Em elaboração') &
+                                                 (df_pareceres['Formato'] == 'PDF')])
+    desbloqueio_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
+                                              (df_pareceres['Andamento'] == 'Concluído') &
+                                              (df_pareceres['Formato'] == 'PDF')])
     total_desbloqueio = 500
+    total_atual_desbloqueio = desbloqueio_em_elaboracao + desbloqueio_concluidos
+    percentual_desbloqueio = (total_atual_desbloqueio / total_desbloqueio) * 100
 
-    fig_desbloqueio = go.Figure()
-    fig_desbloqueio.add_trace(go.Bar(
-        name='Em elaboração',
-        x=['Pareceres de Desbloqueio'],
-        y=[desbloqueio_em_elaboracao],
-        marker_color='orange'
-    ))
-    fig_desbloqueio.add_trace(go.Bar(
-        name='Concluídos',
-        x=['Pareceres de Desbloqueio'],
-        y=[desbloqueio_concluidos],
-        marker_color='green'
-    ))
-    fig_desbloqueio.add_trace(go.Bar(
-        name='Faltando',
-        x=['Pareceres de Desbloqueio'],
-        y=[max(0, total_desbloqueio - (desbloqueio_em_elaboracao + desbloqueio_concluidos))],
-        marker_color='lightgrey'
-    ))
-    fig_desbloqueio.update_layout(
-        barmode='stack',
-        xaxis_title='Status',
-        yaxis_title='Quantidade',
-        legend_title='Legenda'
-    )
-    st.plotly_chart(fig_desbloqueio)
+    # Criar duas colunas para as barras de progresso
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Pareceres Padrão**")
+        st.progress(min(percentual_padrao/100, 1.0))
+        st.write(f"{total_atual_padrao} de {total_padrao} pareceres ({percentual_padrao:.1f}%)")
+        st.write(f"Em elaboração: {padrao_em_elaboracao} | Concluídos: {padrao_concluidos}")
+
+    with col2:
+        st.markdown("**Pareceres de Desbloqueio**")
+        st.progress(min(percentual_desbloqueio/100, 1.0))
+        st.write(f"{total_atual_desbloqueio} de {total_desbloqueio} pareceres ({percentual_desbloqueio:.1f}%)")
+        st.write(f"Em elaboração: {desbloqueio_em_elaboracao} | Concluídos: {desbloqueio_concluidos}")
 
     # Primeiro row com dois gráficos lado a lado
     col1, col2 = st.columns(2)
