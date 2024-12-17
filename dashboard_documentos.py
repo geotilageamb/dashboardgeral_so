@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 @st.cache_data
 def load_data():
-    return pd.read_excel('contPGT.xlsx')
+    return pd.read_excel('02_contPGT.xlsx')
 
 def show_dashboard():
     st.header("Dashboard de Documentos PGT")
