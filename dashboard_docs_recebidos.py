@@ -10,7 +10,7 @@ def remove_special_chars(text):
 # Função para carregar os dados da planilha
 @st.cache
 def load_data():
-    return pd.read_excel('contDocsRecebidos.xlsx')
+    return pd.read_excel('03_contDocsRecebidos.xlsx')
 
 def show_dashboard():
     st.header("Dashboard de Documentos Recebidos")
