@@ -8,7 +8,7 @@ def remove_special_chars(text):
     return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
 
 # Função para carregar os dados da planilha
-@st.cache
+@st.cache_data
 def load_data():
     return pd.read_excel('03_contDocsRecebidos.xlsx')
 
