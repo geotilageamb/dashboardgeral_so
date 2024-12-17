@@ -21,23 +21,23 @@ def main():
     # Configuração do menu lateral para cada aba
     with tab1:
         st.sidebar.title("Filtros - Laudos de supervisão ocupacional")
-        show_dashboard_laudos()
+        show_01_dashboard_laudos()
 
     with tab2:
         st.sidebar.title("Filtros - Documentação PGT")
-        show_dashboard_documentos()
+        show_02_dashboard_documentos()
 
     with tab3:
         st.sidebar.title("Filtros - Pareceres conclusivos")
-        show_dashboard_pareceres()
+        show_04_dashboard_pareceres()
         
     with tab4:
         st.sidebar.title("Filtros - Documentos recebidos")
-        show_dashboard_docs_recebidos()
+        show_03_dashboard_docs_recebidos()
 
     with tab5:
         st.sidebar.title("Filtros - Planilhas monitoramento")
-        show_dashboard_planilhas()
+        show_05_dashboard_planilhas()
 
 if __name__ == "__main__":
     main()
