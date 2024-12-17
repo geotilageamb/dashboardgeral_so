@@ -1,9 +1,9 @@
 import streamlit as st
-from 01_dashboard_laudos import show_dashboard as show_dashboard_laudos
-from 02_dashboard_documentos import show_dashboard as show_dashboard_documentos
-from 04_dashboard_pareceres import show_dashboard as show_dashboard_pareceres
-from 05_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
-from 03_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
+from a_dashboard_laudos import show_dashboard as show_dashboard_laudos
+from b_dashboard_documentos import show_dashboard as show_dashboard_documentos
+from d_dashboard_pareceres import show_dashboard as show_dashboard_pareceres
+from e_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
+from c_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
 
 def main():
     st.title("Dashboard Supervisão Ocupacional - TED INCRA/UFPR")
