@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 @st.cache_data
 def load_data():
     # Atualize o caminho do arquivo para o novo arquivo
-    return pd.read_excel('contPareceres.xlsx')
+    return pd.read_excel('04_contPareceres.xlsx')
 
 def show_dashboard():
     st.header("Pareceres Conclusivos")
