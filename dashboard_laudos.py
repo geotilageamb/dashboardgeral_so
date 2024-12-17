@@ -12,7 +12,7 @@ def show_dashboard():
         return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
 
     # Carregar os dados do Excel
-    file_path = "laudos_SO_infos.xlsx"
+    file_path = "01_laudos_SO_infos.xlsx"
     df = pd.read_excel(file_path)
 
     # Preencher valores vazios na coluna 'Modalidade' com 'Desconhecido'
