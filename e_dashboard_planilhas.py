@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-@st.cache
+@st.cache_data
 def load_data():
     return pd.read_excel('05_contPlanilhas.xlsx')
 
