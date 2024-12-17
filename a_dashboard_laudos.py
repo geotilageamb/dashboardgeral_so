@@ -4,6 +4,13 @@ from datetime import datetime
 import plotly.express as px
 import unicodedata
 
+# Use o decorador st.cache_data para armazenar em cache o carregamento dos dados
+@st.cache_data
+def load_data(file_path):
+    # Carregar os dados do Excel
+    df = pd.read_excel(file_path)
+    return df
+
 def show_dashboard():
     # Função para remover caracteres especiais e normalizar texto
     def remove_special_chars(text):
@@ -11,9 +18,11 @@ def show_dashboard():
             return text  # Retorna o valor original se não for uma string
         return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
 
-    # Carregar os dados do Excel
+    # Caminho do arquivo Excel
     file_path = "01_laudos_SO_infos.xlsx"
-    df = pd.read_excel(file_path)
+
+    # Carregar os dados usando a função cacheada
+    df = load_data(file_path)
 
     # Preencher valores vazios na coluna 'Modalidade' com 'Desconhecido'
     df['Modalidade'] = df['Modalidade'].fillna('Desconhecido')
