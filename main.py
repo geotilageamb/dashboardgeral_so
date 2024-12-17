@@ -1,9 +1,9 @@
 import streamlit as st
-from 01_dashboard_laudos import show_dashboard as 01_show_dashboard_laudos
-from 02_dashboard_documentos import show_dashboard as 02_show_dashboard_documentos
-from 04_dashboard_pareceres import show_dashboard as 04_show_dashboard_pareceres
-from 05_dashboard_planilhas import show_dashboard as 05_show_dashboard_planilhas
-from 03_dashboard_docs_recebidos import show_dashboard as 03_show_dashboard_docs_recebidos
+from _01_dashboard_laudos import show_dashboard as show_dashboard_laudos
+from _02_dashboard_documentos import show_dashboard as show_dashboard_documentos
+from _04_dashboard_pareceres import show_dashboard as show_dashboard_pareceres
+from _05_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
+from _03_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
 
 def main():
     st.title("Dashboard Supervisão Ocupacional - TED INCRA/UFPR")
@@ -21,23 +21,23 @@ def main():
     # Configuração do menu lateral para cada aba
     with tab1:
         st.sidebar.title("Filtros - Laudos de supervisão ocupacional")
-        show_01_dashboard_laudos()
+        show_dashboard_laudos()
 
     with tab2:
         st.sidebar.title("Filtros - Documentação PGT")
-        show_02_dashboard_documentos()
+        show_dashboard_documentos()
 
     with tab3:
         st.sidebar.title("Filtros - Pareceres conclusivos")
-        show_04_dashboard_pareceres()
+        show_dashboard_pareceres()
         
     with tab4:
         st.sidebar.title("Filtros - Documentos recebidos")
-        show_03_dashboard_docs_recebidos()
+        show_dashboard_docs_recebidos()
 
     with tab5:
         st.sidebar.title("Filtros - Planilhas monitoramento")
-        show_05_dashboard_planilhas()
+        show_dashboard_planilhas()
 
 if __name__ == "__main__":
     main()
