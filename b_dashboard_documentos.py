@@ -53,18 +53,15 @@ def show_dashboard():
     # Calcular totais e percentuais
     solicitacoes_atual = len(df_pgt[df_pgt['Tipo de documento PGT'] == 'Solicitação de documentação complementar'])
     segundos_relatorios_atual = len(df_pgt[df_pgt['Tipo de documento PGT'].str.contains('2º Relatório', na=False)])
-    em_elaboracao_atual = len(df_pgt[df_pgt['Status'] == 'Em elaboração'])  # Contabilizar "Em elaboração"
 
     total_solicitacoes = 674
     total_segundos_relatorios = 337
-    total_em_elaboracao = 150  # Defina o total esperado para "Em elaboração" (ajuste conforme necessário)
 
     percentual_solicitacoes = (solicitacoes_atual / total_solicitacoes) * 100
     percentual_relatorios = (segundos_relatorios_atual / total_segundos_relatorios) * 100
-    percentual_em_elaboracao = (em_elaboracao_atual / total_em_elaboracao) * 100
 
-    # Criar três colunas para as barras de progresso
-    col1, col2, col3 = st.columns(3)
+    # Criar duas colunas para as barras de progresso
+    col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("**Solicitação de documentação complementar**")
@@ -75,11 +72,6 @@ def show_dashboard():
         st.markdown("**Segundos Relatórios de Conformidade**")
         st.progress(min(percentual_relatorios/100, 1.0))
         st.write(f"{segundos_relatorios_atual} de {total_segundos_relatorios} relatórios ({percentual_relatorios:.1f}%)")
-
-    with col3:
-        st.markdown("**Pareceres em Elaboração**")
-        st.progress(min(percentual_em_elaboracao/100, 1.0))
-        st.write(f"{em_elaboracao_atual} de {total_em_elaboracao} pareceres ({percentual_em_elaboracao:.1f}%)")
 
     # Gráficos principais
     st.markdown("### Distribuição dos documentos por tipo")
