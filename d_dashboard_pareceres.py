@@ -53,22 +53,18 @@ def show_dashboard():
 
     # Calcular totais e percentuais para Pareceres Padrão
     padrao_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                           (df_pareceres['Andamento'] == 'Em elaboração') &
-                                           (df_pareceres['Formato'] == 'PDF')])
+                                            (df_pareceres['Andamento'] == 'Em elaboração')])
     padrao_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                        (df_pareceres['Andamento'] == 'Concluído') &
-                                        (df_pareceres['Formato'] == 'PDF')])
+                                         (df_pareceres['Andamento'] == 'Concluído')])
     total_padrao = 1622
     total_atual_padrao = padrao_em_elaboracao + padrao_concluidos
     percentual_padrao = (total_atual_padrao / total_padrao) * 100
 
     # Calcular totais e percentuais para Pareceres de Desbloqueio
     desbloqueio_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                                 (df_pareceres['Andamento'] == 'Em elaboração') &
-                                                 (df_pareceres['Formato'] == 'PDF')])
+                                                 (df_pareceres['Andamento'] == 'Em elaboração')])
     desbloqueio_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                              (df_pareceres['Andamento'] == 'Concluído') &
-                                              (df_pareceres['Formato'] == 'PDF')])
+                                              (df_pareceres['Andamento'] == 'Concluído')])
     total_desbloqueio = 500
     total_atual_desbloqueio = desbloqueio_em_elaboracao + desbloqueio_concluidos
     percentual_desbloqueio = (total_atual_desbloqueio / total_desbloqueio) * 100
