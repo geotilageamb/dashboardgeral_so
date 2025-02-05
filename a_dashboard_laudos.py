@@ -29,7 +29,9 @@ def show_dashboard():
 
     # Preencher valores nulos na coluna 'Município' com 'Desconhecido'
     df['Município'] = df['Município'].fillna('Desconhecido')
-    df['Município'] = df['Município'].apply(remove_special_chars)
+
+    # Aplicar a função para remover caracteres especiais na coluna 'Município'
+    df['Município'] = df['Município'].map(remove_special_chars)
 
     # Converter coluna de data
     df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y')
