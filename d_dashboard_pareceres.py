@@ -52,22 +52,20 @@ def show_dashboard():
     st.subheader("Progresso dos Pareceres")
 
     # Calcular totais e percentuais para Pareceres Padrão
-    padrao_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
-                                            (df_pareceres['Andamento'] == 'Em elaboração')])
     padrao_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
                                          (df_pareceres['Andamento'] == 'Concluído')])
+    padrao_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Padrão') & 
+                                            (df_pareceres['Andamento'] == 'Em elaboração')])
     total_padrao = 1622
-    total_atual_padrao = padrao_em_elaboracao + padrao_concluidos
-    percentual_padrao = (total_atual_padrao / total_padrao) * 100
+    percentual_padrao = (padrao_concluidos / total_padrao) * 100
 
     # Calcular totais e percentuais para Pareceres de Desbloqueio
-    desbloqueio_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
-                                                 (df_pareceres['Andamento'] == 'Em elaboração')])
     desbloqueio_concluidos = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
                                               (df_pareceres['Andamento'] == 'Concluído')])
+    desbloqueio_em_elaboracao = len(df_pareceres[(df_pareceres['Tipo'] == 'Desbloqueio') & 
+                                                 (df_pareceres['Andamento'] == 'Em elaboração')])
     total_desbloqueio = 500
-    total_atual_desbloqueio = desbloqueio_em_elaboracao + desbloqueio_concluidos
-    percentual_desbloqueio = (total_atual_desbloqueio / total_desbloqueio) * 100
+    percentual_desbloqueio = (desbloqueio_concluidos / total_desbloqueio) * 100
 
     # Criar duas colunas para as barras de progresso
     col1, col2 = st.columns(2)
@@ -75,14 +73,14 @@ def show_dashboard():
     with col1:
         st.markdown("**Pareceres Padrão**")
         st.progress(min(percentual_padrao/100, 1.0))
-        st.write(f"{total_atual_padrao} de {total_padrao} pareceres ({percentual_padrao:.1f}%)")
-        st.write(f"Em elaboração: {padrao_em_elaboracao} | Concluídos: {padrao_concluidos}")
+        st.write(f"{padrao_concluidos} de {total_padrao} pareceres concluídos ({percentual_padrao:.1f}%)")
+        st.write(f"Em elaboração: {padrao_em_elaboracao}")
 
     with col2:
         st.markdown("**Pareceres de Desbloqueio**")
         st.progress(min(percentual_desbloqueio/100, 1.0))
-        st.write(f"{total_atual_desbloqueio} de {total_desbloqueio} pareceres ({percentual_desbloqueio:.1f}%)")
-        st.write(f"Em elaboração: {desbloqueio_em_elaboracao} | Concluídos: {desbloqueio_concluidos}")
+        st.write(f"{desbloqueio_concluidos} de {total_desbloqueio} pareceres concluídos ({percentual_desbloqueio:.1f}%)")
+        st.write(f"Em elaboração: {desbloqueio_em_elaboracao}")
 
     # Primeiro row com dois gráficos lado a lado
     col1, col2 = st.columns(2)
