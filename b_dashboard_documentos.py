@@ -8,7 +8,7 @@ def load_data():
     return pd.read_excel('02_contPGT.xlsx')
 
 def show_dashboard():
-    st.header("Dashboard de Documentos PGT")
+    st.header("Produtos da meta 2.2")
     df_pgt = load_data()
 
     if 'Objetivo' in df_pgt.columns:
