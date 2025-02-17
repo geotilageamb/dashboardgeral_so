@@ -28,6 +28,7 @@ def show_dashboard():
     else:
         objetivos = ['Todos']
 
+    # Configuração dos filtros no sidebar
     selected_tipo_documento = st.sidebar.selectbox("Selecione um tipo de documento:", tipos_documento, key="tipo_documento_pgt_unique")
     selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_pgt_unique")
     selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_pgt_unique")
@@ -51,29 +52,41 @@ def show_dashboard():
     st.subheader("Progresso da Documentação")
 
     # Calcular totais e percentuais
+    relatorios_conf_atual = len(df_pgt[df_pgt['Tipo de documento PGT'] == 'Relatório de conformidades para regularização'])
     solicitacoes_atual = len(df_pgt[df_pgt['Tipo de documento PGT'] == 'Solicitação de documentação complementar'])
     segundos_relatorios_atual = len(df_pgt[df_pgt['Tipo de documento PGT'].str.contains('2º Relatório', na=False)])
+    analise_reg_atual = len(df_pgt[df_pgt['Tipo de documento PGT'] == 'Análise para regularização'])
 
+    # Definir metas
+    total_relatorios_conf = 2246
     total_solicitacoes = 674
     total_segundos_relatorios = 337
+    total_analise_reg = 1622
 
+    # Calcular percentuais
+    percentual_relatorios_conf = (relatorios_conf_atual / total_relatorios_conf) * 100
     percentual_solicitacoes = (solicitacoes_atual / total_solicitacoes) * 100
-    percentual_relatorios = (segundos_relatorios_atual / total_segundos_relatorios) * 100
+    percentual_segundos_relatorios = (segundos_relatorios_atual / total_segundos_relatorios) * 100
+    percentual_analise_reg = (analise_reg_atual / total_analise_reg) * 100
 
-    # Criar duas colunas para as barras de progresso
-    col1, col2 = st.columns(2)
+    # Exibir barras de progresso em ordem
+    st.markdown("**1. Relatório de conformidades para regularização**")
+    st.progress(min(percentual_relatorios_conf/100, 1.0))
+    st.write(f"{relatorios_conf_atual} de {total_relatorios_conf} documentos ({percentual_relatorios_conf:.1f}%)")
 
-    with col1:
-        st.markdown("**Solicitação de documentação complementar**")
-        st.progress(min(percentual_solicitacoes/100, 1.0))
-        st.write(f"{solicitacoes_atual} de {total_solicitacoes} documentos ({percentual_solicitacoes:.1f}%)")
+    st.markdown("**2. Solicitação de documentação complementar**")
+    st.progress(min(percentual_solicitacoes/100, 1.0))
+    st.write(f"{solicitacoes_atual} de {total_solicitacoes} documentos ({percentual_solicitacoes:.1f}%)")
 
-    with col2:
-        st.markdown("**Segundos Relatórios de Conformidade**")
-        st.progress(min(percentual_relatorios/100, 1.0))
-        st.write(f"{segundos_relatorios_atual} de {total_segundos_relatorios} relatórios ({percentual_relatorios:.1f}%)")
+    st.markdown("**3. Segundos relatórios de conformidades para regularização**")
+    st.progress(min(percentual_segundos_relatorios/100, 1.0))
+    st.write(f"{segundos_relatorios_atual} de {total_segundos_relatorios} documentos ({percentual_segundos_relatorios:.1f}%)")
 
-    # Gráficos principais
+    st.markdown("**4. Análise para regularização**")
+    st.progress(min(percentual_analise_reg/100, 1.0))
+    st.write(f"{analise_reg_atual} de {total_analise_reg} documentos ({percentual_analise_reg:.1f}%)")
+
+    # Resto do dashboard permanece igual
     st.markdown("### Distribuição dos documentos por tipo")
     tipo_documento_data = filtered_df['Tipo de documento PGT'].value_counts()
     fig_tipo_documento = px.pie(
@@ -99,36 +112,12 @@ def show_dashboard():
         objetivo_data = filtered_df['Objetivo'].value_counts()
         st.bar_chart(objetivo_data)
 
-    # Tabelas de dados
     st.markdown("### Relação geral da documentação")
     st.write(filtered_df)
 
     total_por_tipo_assentamento = filtered_df.groupby(['Tipo de documento PGT', 'Assentamento']).size().reset_index(name='Quantidade de Documentos')
     st.markdown("### Quantidade de documentos por tipo e assentamento")
     st.write(total_por_tipo_assentamento)
-
-    # Métricas adicionais para segundos relatórios
-    st.markdown("### Métricas de Segundos Relatórios")
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.metric(
-            "Total de Segundos Relatórios",
-            segundos_relatorios_atual
-        )
-
-    with col2:
-        st.metric(
-            "Meta a Atingir",
-            total_segundos_relatorios
-        )
-
-    with col3:
-        percentual = round((segundos_relatorios_atual / total_segundos_relatorios) * 100, 2)
-        st.metric(
-            "Progresso (%)",
-            f"{percentual}%"
-        )
 
 if __name__ == "__main__":
     show_dashboard()
