@@ -3,6 +3,19 @@
 Esse dashboard sistematiza diversos indicadores da equipe de supervisão ocupacional do Programa TED INCRA/UFPR
 Link: https://so-dashboardgeral.streamlit.app
 
+# Sumário
+- [Resumo geral](#resumo-geral)
+- [Backend](#backend)
+  - [01_SO - Primeira página](#01_so-pasta-referente-à-primeira-página-do-dashboard)
+  - [02_SO - Segunda página](#02_so-pasta-referente-à-segunda-página-do-dashboard)
+  - [03_SO - Terceira página](#03_so-pasta-referente-à-terceira-página-do-dashboard)
+  - [04_SO - Quarta página](#04_so-pasta-referente-à-quarta-página-do-dashboard)
+  - [05_SO - Quinta página](#05_so-pasta-referente-à-quinta-página-do-dashboard)
+- [Frontend](#frontend)
+
+
+# Resumo geral
+
 # Backend
 
 A alimentação desse dashboard, no backend, envolve 5 planilhas (.xlsx), 5 planilhas (.csv) e 10 códigos python (.py):
@@ -80,3 +93,4 @@ Cada pasta (01_SO, 02_SO, etc.) representa uma página do dashboard e cada dashb
     - [d_dashboard_pareceres.py](/d_dashboard_pareceres.py)
 - Página 5 do dashboard - Meta 2.4 e produto 2.4.1
     - [e_dashboard_planilhas.py](/e_dashboard_planilhas.py)
+
