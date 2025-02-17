@@ -10,25 +10,25 @@ def main():
 
     # Criação das abas
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Laudos de supervisão ocupacional",
-        "Documentação PGT",
-        "Pareceres conclusivos",
-        "Documentos recebidos",
-        "Planilhas monitoramento"
+        "2.1 Laudos",
+        "2.2 Documentação PGT",
+        "2.3 Pareceres conclusivos",
+        "2.2.1.1 Documentos recebidos",
+        "2.4 Planilhas monitoramento"
 
     ])
 
     # Configuração do menu lateral para cada aba
     with tab1:
-        st.sidebar.title("Filtros - Laudos de supervisão ocupacional")
+        st.sidebar.title("Filtros - 2.1 Laudos")
         show_dashboard_laudos()
 
     with tab2:
-        st.sidebar.title("Filtros - Documentação PGT")
+        st.sidebar.title("Filtros - 2.2 Documentação PGT")
         show_dashboard_documentos()
 
     with tab3:
-        st.sidebar.title("Filtros - Pareceres conclusivos")
+        st.sidebar.title("Filtros - 2.3 Pareceres conclusivos")
         show_dashboard_pareceres()
         
     with tab4:
@@ -36,7 +36,7 @@ def main():
         show_dashboard_docs_recebidos()
 
     with tab5:
-        st.sidebar.title("Filtros - Planilhas monitoramento")
+        st.sidebar.title("Filtros - 2.4 Planilhas monitoramento")
         show_dashboard_planilhas()
 
 if __name__ == "__main__":
