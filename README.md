@@ -12,7 +12,11 @@ Link: https://so-dashboardgeral.streamlit.app
   - [04_SO - Quarta página](#04_so-pasta-referente-à-quarta-página-do-dashboard)
   - [05_SO - Quinta página](#05_so-pasta-referente-à-quinta-página-do-dashboard)
 - [Frontend](#frontend)
-
+  - [Página 1 - Meta 2.1](#página-1-do-dashboard---meta-21-e-produtos-211-e-212)
+  - [Página 2 - Meta 2.2](#página-2-do-dashboard---meta-22-e-produtos-221-222-223-e-224)
+  - [Página 3 - Meta 2.3](#página-3-do-dashboard---meta-23-e-produtos-231-e-232)
+  - [Página 4 - Meta 2.2.1.1](#página-4-do-dashboard---etapa-2211-da-meta-22)
+  - [Página 5 - Meta 2.4](#página-5-do-dashboard---meta-24-e-produto-241)
 
 # Resumo geral
 
