@@ -102,3 +102,4 @@ Cada pasta (01_SO, 02_SO, etc.) representa uma página do dashboard e cada dashb
 - Página 5 do dashboard - Meta 2.4 e produto 2.4.1
     - [e_dashboard_planilhas.py](/e_dashboard_planilhas.py)
 
+# Caso restem dúvidas, entre em contato com a equipe de GeoTI/P6 TED INCRA/UFPR pelo Microsoft Teams.
