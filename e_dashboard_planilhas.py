@@ -27,9 +27,6 @@ def show_dashboard():
     with col2:
         st.metric("2.4.1 Total de planilhas de assentamento", total_assentamentos)
 
-    with col3:
-        st.metric("Total de planilhas", total_com_planilha)
-
     # Gráfico de pizza com planilhas por município
     st.header("Distribuição de Planilhas por Município")
 
