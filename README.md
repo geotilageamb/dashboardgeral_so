@@ -43,3 +43,6 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - 05_2_copiadorPlanilhasProducaoSO.py (código python que copia a planilha de informações do SharePoint para o repositório do GitHub)
 - 05_codsipraPAsMunicipios.csv (arquivo csv que alimenta o código python com os municípios, assentamentos e códigos SIPRA)
 - 05_contPlanilhas.xlsx (planilha gerada pelo código python com as informações das planilhas de monitoramento elaboradas pela SO)
+
+
+Cada pasta representa uma página do dashboard,
