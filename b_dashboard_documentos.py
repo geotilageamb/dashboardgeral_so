@@ -70,19 +70,19 @@ def show_dashboard():
     percentual_analise_reg = (analise_reg_atual / total_analise_reg) * 100
 
     # Exibir barras de progresso em ordem
-    st.markdown("**1. Relatório de conformidades para regularização**")
+    st.markdown("**2.2.1. Relatório de conformidades para regularização**")
     st.progress(min(percentual_relatorios_conf/100, 1.0))
     st.write(f"{relatorios_conf_atual} de {total_relatorios_conf} documentos ({percentual_relatorios_conf:.1f}%)")
 
-    st.markdown("**2. Solicitação de documentação complementar**")
+    st.markdown("**2.2.2. Solicitação de documentação complementar**")
     st.progress(min(percentual_solicitacoes/100, 1.0))
     st.write(f"{solicitacoes_atual} de {total_solicitacoes} documentos ({percentual_solicitacoes:.1f}%)")
 
-    st.markdown("**3. Segundos relatórios de conformidades para regularização**")
+    st.markdown("**2.2.3. Segundos relatórios de conformidades para regularização**")
     st.progress(min(percentual_segundos_relatorios/100, 1.0))
     st.write(f"{segundos_relatorios_atual} de {total_segundos_relatorios} documentos ({percentual_segundos_relatorios:.1f}%)")
 
-    st.markdown("**4. Análise para regularização**")
+    st.markdown("**2.2.4. Análise para regularização**")
     st.progress(min(percentual_analise_reg/100, 1.0))
     st.write(f"{analise_reg_atual} de {total_analise_reg} documentos ({percentual_analise_reg:.1f}%)")
 
