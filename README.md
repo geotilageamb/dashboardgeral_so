@@ -53,4 +53,4 @@ Página 3 do dashboard - Meta 2.3 e produtos 2.3.1 e 2.3.2
 Página 4 do dashboard - Etapa 2.2.1.1 da meta 2.2
 Página 5 do dashboard - Meta 2.4 e produto 2.4.1
 
-
+(01_laudos_SO_infos.xlsx)
