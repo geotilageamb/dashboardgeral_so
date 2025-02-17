@@ -7,7 +7,7 @@ def load_data():
     return pd.read_excel('05_contPlanilhas.xlsx')
 
 def show_dashboard():
-    st.header("Monitoramento de Planilhas por Assentamento")
+    st.header("Produto 2.4")
     data_planilhas = load_data()
 
     # Limpeza dos nomes das colunas
@@ -22,13 +22,13 @@ def show_dashboard():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric("Total de Municípios", total_municipios)
+        st.metric("Total de planilhas de município", total_municipios)
 
     with col2:
-        st.metric("Total de Assentamentos", total_assentamentos)
+        st.metric("2.4.1 Total de planilhas de assentamento", total_assentamentos)
 
     with col3:
-        st.metric("Total com Planilha", total_com_planilha)
+        st.metric("Total de planilhas", total_com_planilha)
 
     # Gráfico de pizza com planilhas por município
     st.header("Distribuição de Planilhas por Município")
