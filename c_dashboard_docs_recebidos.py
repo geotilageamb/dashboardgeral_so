@@ -13,8 +13,10 @@ def load_data():
     return pd.read_excel('03_contDocsRecebidos.xlsx')
 
 def show_dashboard():
-    st.header("Produto 2.2.1.1 da meta 2.2 Documentos recebidos de assentados e NMRFs")
+    st.header("Produto 2.2.1.1 da meta 2.2")
     df_docs = load_data()
+
+    st.subheader("Documentos recebidos de assentados e NMRFs")
 
     # Remover caracteres especiais para facilitar a manipulação
     df_docs['Município'] = df_docs['Município'].apply(remove_special_chars)
