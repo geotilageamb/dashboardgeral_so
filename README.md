@@ -11,7 +11,7 @@ As páginas do dashboard e os respectivos arquivos envolvidos:
 
 D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 
-01_SO (Pasta referente à primeira página do dashboard)
+# 01_SO (Pasta referente à primeira página do dashboard)
 - [01_1_infosLaudosModalide.py](/01_SO/01_1_infosLaudosModalide.py)
     - código python que extrai informações dos laudos dentro do SharePoint da SO e gera uma planilha com essas informações
 - [01_2_copiadorPlanilha.py](/01_SO/01_2_copiadorPlanilha.py)
@@ -25,7 +25,7 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - [01_nomesTecnicos.csv](/01_SO/01_nomesTecnicos.csv)
     - arquivo csv que alimenta o código python com o nome dos técnicos da SO
 
-02_SO (Pasta referente à segunda página do dashboard)
+# 02_SO (Pasta referente à segunda página do dashboard)
 - [02_1_renomeador_docsPGTWEB.py](/02_SO/02_1_renomeador_docsPGTWEB.py)
     - código python que identifica e renomeia arquivos da PGT - Plataforma de Governança Territorial presentes no SharePoint da SO, conforme regras definidas
 - [02_2_quantificadorDocsPGTWEB.py](/02_SO/02_2_quantificadorDocsPGTWEB.py)
@@ -37,7 +37,7 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - [02_contPGT.xlsx](/02_SO/02_contPGT.xlsx)
     - planilha gerada pelo código python com as informações dos documentos da PGT - Plataforma de Governança Territorial
 
-03_SO (Pasta referente à terceira página do dashboard)
+# 03_SO (Pasta referente à terceira página do dashboard)
 - [03_1_contarDocsRecebidos.py](/03_SO/03_1_contarDocsRecebidos.py)
     - código python que identifica quantifica os documentos recebidos dos assentados pela SO
 - [03_2_copiadorPlanilhaDocsRecebidos.py](/03_SO/03_2_copiadorPlanilhaDocsRecebidos.py)
@@ -47,7 +47,7 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - [03_contDocsRecebidos.xlsx](/03_SO/03_contDocsRecebidos.xlsx)
     - planilha gerada pelo código python com as informações dos documentos recebidos pelos assentados
 
-04_SO (Pasta referente à quarta página do dashboard)
+# 04_SO (Pasta referente à quarta página do dashboard)
 - [04_1_quantificadorPareceres.py](/04_SO/04_1_quantificadorPareceres.py)
     - código python que identifica e quantifica os pareceres de beneficiário elaborados pela SO
 - [04_2_copiadorPlanilhaPareceres.py](/04_SO/04_2_copiadorPlanilhaPareceres.py)
@@ -57,7 +57,7 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - [04_contPareceres.xlsx](/04_SO/04_contPareceres.xlsx)
     - planilha gerada pelo código python com as informações dos pareceres de beneficiários elaborados pela SO
 
-05_SO (Pasta referente à quinta página do dashboard)
+# 05_SO (Pasta referente à quinta página do dashboard)
 - [05_1_contadorPlanilhasProd_SO.py](/05_SO/05_1_contadorPlanilhasProd_SO.py)
     - código python que identifica e quantifica as planilhas de monitoramento elaboradas pela SO
 - [05_2_copiadorPlanilhasProducaoSO.py](/05_SO/05_2_copiadorPlanilhasProducaoSO.py)
@@ -67,7 +67,9 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - [05_contPlanilhas.xlsx](/05_SO/05_contPlanilhas.xlsx)
     - planilha gerada pelo código python com as informações das planilhas de monitoramento elaboradas pela SO
 
-# FrontendCada pasta representa uma página do dashboard, que representa uma meta do plano de trabalho cada, sendo:
+# Frontend
+Cada pasta representa uma página do dashboard, que representa uma meta do plano de trabalho cada, sendo:
+
 Página 1 do dashboard - Meta 2.1 e produtos 2.1.1 e 2.1.2
 Página 2 do dashboard - Meta 2.2 e produtos 2.2.1, 2.2.2, 2.2.3 e 2.2.4
 Página 3 do dashboard - Meta 2.3 e produtos 2.3.1 e 2.3.2
