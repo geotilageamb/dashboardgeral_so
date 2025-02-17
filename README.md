@@ -70,8 +70,8 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 # Frontend
 Cada pasta representa uma página do dashboard, que representa uma meta do plano de trabalho cada, sendo:
 
-Página 1 do dashboard - Meta 2.1 e produtos 2.1.1 e 2.1.2
-Página 2 do dashboard - Meta 2.2 e produtos 2.2.1, 2.2.2, 2.2.3 e 2.2.4
-Página 3 do dashboard - Meta 2.3 e produtos 2.3.1 e 2.3.2
-Página 4 do dashboard - Etapa 2.2.1.1 da meta 2.2
-Página 5 do dashboard - Meta 2.4 e produto 2.4.1
+- Página 1 do dashboard - Meta 2.1 e produtos 2.1.1 e 2.1.2
+- Página 2 do dashboard - Meta 2.2 e produtos 2.2.1, 2.2.2, 2.2.3 e 2.2.4
+- Página 3 do dashboard - Meta 2.3 e produtos 2.3.1 e 2.3.2
+- Página 4 do dashboard - Etapa 2.2.1.1 da meta 2.2
+- Página 5 do dashboard - Meta 2.4 e produto 2.4.1
