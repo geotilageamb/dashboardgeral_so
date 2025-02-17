@@ -7,7 +7,7 @@ def load_data():
     return pd.read_excel('05_contPlanilhas.xlsx')
 
 def show_dashboard():
-    st.header("Produto 2.4")
+    st.header("Produto da meta 2.4")
     data_planilhas = load_data()
 
     # Limpeza dos nomes das colunas
