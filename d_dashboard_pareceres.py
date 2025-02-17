@@ -8,7 +8,7 @@ def load_data():
     return pd.read_excel('04_contPareceres.xlsx')
 
 def show_dashboard():
-    st.header("Pareceres Conclusivos")
+    st.header("Produtos da meta 2.3")
     df_pareceres = load_data()
 
     assentamentos = ['Todos'] + sorted(list(df_pareceres['Assentamento'].unique()))
@@ -37,12 +37,12 @@ def show_dashboard():
     # Barras de Progresso
     st.subheader("Progresso dos Pareceres")
 
-    # Calcular totais e percentuais para Pareceres Padrão
+    # Calcular totais e percentuais para os pareceres de beneficiário em geral
     padrao_total = len(df_pareceres[df_pareceres['Tipo'] == 'Padrão'])
     total_padrao = 4239
     percentual_padrao = (padrao_total / total_padrao) * 100
 
-    # Calcular totais e percentuais para Pareceres de Desbloqueio
+    # Calcular totais e percentuais para Pareceres para desbloqueio
     desbloqueio_total = len(df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'])
     total_desbloqueio = 500
     percentual_desbloqueio = (desbloqueio_total / total_desbloqueio) * 100
@@ -51,12 +51,12 @@ def show_dashboard():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("**Pareceres Padrão**")
+        st.markdown("**2.3.1 Pareceres de beneficiário**")
         st.progress(min(percentual_padrao/100, 1.0))
         st.write(f"{padrao_total} de {total_padrao} pareceres concluídos ({percentual_padrao:.1f}%)")
 
     with col2:
-        st.markdown("**Pareceres de Desbloqueio**")
+        st.markdown("**2.3.2 Pareceres para desbloqueio**")
         st.progress(min(percentual_desbloqueio/100, 1.0))
         st.write(f"{desbloqueio_total} de {total_desbloqueio} pareceres concluídos ({percentual_desbloqueio:.1f}%)")
 
