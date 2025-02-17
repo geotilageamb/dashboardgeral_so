@@ -68,7 +68,7 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
     - planilha gerada pelo código python com as informações das planilhas de monitoramento elaboradas pela SO
 
 # Frontend
-Cada pasta representa uma página do dashboard, que representa uma meta do plano de trabalho cada, sendo:
+Cada pasta (01_SO, 02_SO, etc.) representa uma página do dashboard e cada dashboard é alimentado por um código python e a respectiva planilha gerada no backend:
 
 - Página 1 do dashboard - Meta 2.1 e produtos 2.1.1 e 2.1.2
     - [a_dashboard_laudos.py](/a_dashboard_laudos.py)
