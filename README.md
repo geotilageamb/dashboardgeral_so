@@ -32,8 +32,14 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 - 03_codsipraPAsMunicipios.csv (arquivo csv que alimenta o código python com os municípios, assentamentos e códigos SIPRA)
 - 03_contDocsRecebidos.xlsx (planilha gerada pelo código python com as informações dos documentos recebidos pelos assentados)
 
-  04_SO (Pasta referente à quarta página do dashboard)
-- 04_1_quantificadorPareceres.py (código python que identifica quantifica os documentos recebidos dos assentados pela SO)
+04_SO (Pasta referente à quarta página do dashboard)
+- 04_1_quantificadorPareceres.py (código python que identifica e quantifica os pareceres de beneficiário elaborados pela SO)
 - 04_2_copiadorPlanilhaPareceres.py (código python que copia a planilha de informações do SharePoint para o repositório do GitHub)
 - 04_codsipraPAsMunicipios.csv (arquivo csv que alimenta o código python com os municípios, assentamentos e códigos SIPRA)
-- 04_contPareceres.xlsx (planilha gerada pelo código python com as informações dos documentos recebidos pelos assentados)
+- 04_contPareceres.xlsx (planilha gerada pelo código python com as informações dos pareceres de beneficiários elaborados pela SO)
+
+05_SO (Pasta referente à quinta página do dashboard)
+- 05_1_contadorPlanilhasProd_SO.py (código python que identifica e quantifica as planilhas de monitoramento elaboradas pela SO)
+- 05_2_copiadorPlanilhasProducaoSO.py (código python que copia a planilha de informações do SharePoint para o repositório do GitHub)
+- 05_codsipraPAsMunicipios.csv (arquivo csv que alimenta o código python com os municípios, assentamentos e códigos SIPRA)
+- 05_contPlanilhas.xlsx (planilha gerada pelo código python com as informações das planilhas de monitoramento elaboradas pela SO)
