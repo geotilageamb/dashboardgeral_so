@@ -71,8 +71,12 @@ D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 Cada pasta representa uma página do dashboard, que representa uma meta do plano de trabalho cada, sendo:
 
 - Página 1 do dashboard - Meta 2.1 e produtos 2.1.1 e 2.1.2
-    - [a_dashboard_laudos.py] (/a_dashboard_laudos.py)
-    - aa 
+    - [a_dashboard_laudos.py](/a_dashboard_laudos.py)
+    - [b_dashboard_documentos.py](/b_dashboard_documentos.py)
+    - [c_dashboard_docs_recebidos.py](/c_dashboard_docs_recebidos.py)
+    - [d_dashboard_pareceres.py](/d_dashboard_pareceres.py)
+    - [e_dashboard_planilhas.py](/e_dashboard_planilhas.py)
+    - 
 - Página 2 do dashboard - Meta 2.2 e produtos 2.2.1, 2.2.2, 2.2.3 e 2.2.4
 - Página 3 do dashboard - Meta 2.3 e produtos 2.3.1 e 2.3.2
 - Página 4 do dashboard - Etapa 2.2.1.1 da meta 2.2
