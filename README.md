@@ -1,4 +1,4 @@
-# dashboardgeral_so
+# Dashboard geral das metas e produtos da Supervisão Ocupacional (TED INCRA/UFPR)
 
 Esse dashboard sistematiza diversos indicadores da equipe de supervisão ocupacional do Programa TED INCRA/UFPR
 Link: https://so-dashboardgeral.streamlit.app
