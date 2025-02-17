@@ -20,13 +20,17 @@ Link: https://so-dashboardgeral.streamlit.app
 
 # Resumo geral
 
+Todo o trabalho de gestão e manutenção do dashboard das metas e produtos da Supervisão Ocupacional do TED INCRA/UFPR acontece dessa forma:
+1. Códigos python que renomeiam arquivos no SharePoint da SO conforme regras definidas previamente
+2. Códigos python que extraem informações de arquivos do SharePoint da SO e geram planilhas com essas informações
+3. Códigos python que copiam a planilha do SharePoint para o Repositório do GitHub
+4. Códigos python que configuram a própria exibição das informações no dashboard
+
 # Backend
 
 A alimentação desse dashboard, no backend, envolve 5 planilhas (.xlsx), 5 planilhas (.csv) e 10 códigos python (.py):
 
-As páginas do dashboard e os respectivos arquivos envolvidos:
-
-D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
+As pastas do SharePoint (backend) e as respectivas páginas do dashboard:
 
 # 01_SO (Pasta referente à primeira página do dashboard)
 - [01_1_infosLaudosModalidade.py](backend/01_SO/01_1_infosLaudosModalidade.py)
