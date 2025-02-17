@@ -12,7 +12,7 @@ As páginas do dashboard e os respectivos arquivos envolvidos:
 D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes
 
 # 01_SO (Pasta referente à primeira página do dashboard)
-- [01_1_infosLaudosModalide.py](/01_SO/01_1_infosLaudosModalide.py)
+- [01_1_infosLaudosModalidade.py](/01_SO/01_1_infosLaudosModalidade.py)
     - código python que extrai informações dos laudos dentro do SharePoint da SO e gera uma planilha com essas informações
 - [01_2_copiadorPlanilha.py](/01_SO/01_2_copiadorPlanilha.py)
     - código python que copia a planilha de informações do SharePoint para o repositório do GitHub
