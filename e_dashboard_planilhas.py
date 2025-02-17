@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 @st.cache_data
 def load_data():
@@ -9,24 +10,46 @@ def show_dashboard():
     st.header("Monitoramento de Planilhas por Assentamento")
     data_planilhas = load_data()
 
-    st.header("Totais")
+    # Limpeza dos nomes das colunas
+    data_planilhas.columns = data_planilhas.columns.str.strip()
+
+    # Cálculo dos totais
+    total_municipios = data_planilhas['Município'].nunique()
     total_assentamentos = len(data_planilhas)
-    total_com_planilha = len(data_planilhas[data_planilhas["Planilha de monitoramento"] == "Sim"])
+    total_com_planilha = len(data_planilhas[data_planilhas["Planilha de monitoramento"].str.strip() == "Sim"])
 
-    totais_df = pd.DataFrame({
-        "Total de Assentamentos": [total_assentamentos],
-        "Total com Planilha de Monitoramento": [total_com_planilha]
-    })
-    st.table(totais_df)
+    # Layout em colunas para os totais
+    col1, col2, col3 = st.columns(3)
 
-    st.header("Distribuição por Município")
-    municipios_count = data_planilhas["Município"].value_counts()
-    st.bar_chart(municipios_count)
+    with col1:
+        st.metric("Total de Municípios", total_municipios)
 
+    with col2:
+        st.metric("Total de Assentamentos", total_assentamentos)
+
+    with col3:
+        st.metric("Total com Planilha", total_com_planilha)
+
+    # Gráfico de pizza com planilhas por município
+    st.header("Distribuição de Planilhas por Município")
+
+    planilhas_por_municipio = data_planilhas.groupby('Município').size().reset_index()
+    planilhas_por_municipio.columns = ['Município', 'Quantidade']
+
+    fig = px.pie(planilhas_por_municipio, 
+                 values='Quantidade', 
+                 names='Município',
+                 title='Distribuição de Planilhas por Município')
+
+    # Atualiza o layout para melhor visualização
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig)
+
+    # Tabela Completa
     st.header("Tabela Completa")
     st.dataframe(data_planilhas)
 
-    # Opcional: Adicionar um filtro por município
+    # Filtro por município
     st.header("Filtrar por Município")
     municipio_selecionado = st.selectbox(
         "Selecione um município:",
