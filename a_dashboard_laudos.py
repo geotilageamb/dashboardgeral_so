@@ -57,12 +57,12 @@ def show_dashboard():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("**Vistoria In Loco**")
+        st.markdown("**2.1.1 Vistoria in loco**")
         st.progress(min(percentual_vistoria/100, 1.0))
         st.write(f"{total_vistoria} de {meta_vistoria} laudos ({percentual_vistoria:.1f}%)")
 
     with col2:
-        st.markdown("**Mutirão**")
+        st.markdown("**2.1.2 Mutirão**")
         st.progress(min(percentual_mutirao/100, 1.0))
         st.write(f"{total_mutirao} de {meta_mutirao} laudos ({percentual_mutirao:.1f}%)")
 
