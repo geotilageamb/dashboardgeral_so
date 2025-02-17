@@ -37,7 +37,7 @@ def show_dashboard():
     df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y')
 
     # Definir título do aplicativo
-    st.header("Laudos de Supervisão Ocupacional")
+    st.header("Produtos da meta 2.1")
 
     # Calcular total de laudos por modalidade
     total_vistoria = len(df[df['Modalidade'] == 'VISTORIA IN LOCO'])
