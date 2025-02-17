@@ -39,7 +39,7 @@ def show_dashboard():
 
     # Calcular totais e percentuais para Pareceres Padrão
     padrao_total = len(df_pareceres[df_pareceres['Tipo'] == 'Padrão'])
-    total_padrao = 1622
+    total_padrao = 4239
     percentual_padrao = (padrao_total / total_padrao) * 100
 
     # Calcular totais e percentuais para Pareceres de Desbloqueio
