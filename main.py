@@ -1,19 +1,30 @@
 import streamlit as st
 import hashlib
+import os
 from a_dashboard_laudos import show_dashboard as show_dashboard_laudos
 from b_dashboard_documentos import show_dashboard as show_dashboard_documentos
 from d_dashboard_pareceres import show_dashboard as show_dashboard_pareceres
 from e_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
 from c_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
 
+# Usando PBKDF2 (mais seguro que SHA256 simples)
+def hash_senha(senha):
+    """Hash a senha usando PBKDF2."""
+    salt = b'salt_fixo_dashboard'  # Salt fixo para manter consistência
+    senha_hash = hashlib.pbkdf2_hmac(
+        'sha256',  # Algoritmo de hash
+        senha.encode('utf-8'),  # Converte a senha para bytes
+        salt,  # Salt
+        100000  # Número de iterações
+    )
+    return senha_hash.hex()
+
 # Hash da senha "199850"
-SENHA_HASH = "96b19a3a969cc99eef511b4e2979d798c2f4ff55d9f5b2869defa7a6253ad494"
+SENHA_HASH = hash_senha("199850")
 
 def verificar_senha(senha_digitada):
-    """Verifica se a senha está correta usando hash."""
-    # Garante que a senha seja codificada em UTF-8 antes de gerar o hash
-    senha_hash = hashlib.sha256(senha_digitada.encode('utf-8')).hexdigest()
-    return senha_hash == SENHA_HASH
+    """Verifica se a senha está correta."""
+    return hash_senha(senha_digitada) == SENHA_HASH
 
 def check_password():
     """Retorna `True` se a senha estiver correta."""
