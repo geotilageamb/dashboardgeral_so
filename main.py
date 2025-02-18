@@ -7,11 +7,12 @@ from e_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
 from c_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_recebidos
 
 # Hash da senha "199850"
-SENHA_HASH = "8dc9fa69ec51a2e2165529f0fadae98f6a89497b9404bdc52651ba165fb9688f"
+SENHA_HASH = "96b19a3a969cc99eef511b4e2979d798c2f4ff55d9f5b2869defa7a6253ad494"
 
 def verificar_senha(senha_digitada):
     """Verifica se a senha está correta usando hash."""
-    senha_hash = hashlib.sha256(senha_digitada.encode()).hexdigest()
+    # Garante que a senha seja codificada em UTF-8 antes de gerar o hash
+    senha_hash = hashlib.sha256(senha_digitada.encode('utf-8')).hexdigest()
     return senha_hash == SENHA_HASH
 
 def check_password():
