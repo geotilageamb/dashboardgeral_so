@@ -2,10 +2,6 @@ import os
 import pandas as pd
 from thefuzz import process
 import time
-import PyPDF2
-import re
-import unidecode
-import shutil
 
 def extract_info_from_filename(filename):
     base_name = os.path.splitext(filename)[0]
@@ -41,87 +37,11 @@ def find_best_match(name, choices):
     match, score, _ = process.extractOne(name, choices)
     return match if score > 80 else 'Desconhecido'
 
-def extract_text_from_pdf(pdf_path):
-    text = ""
-    try:
-        with open(pdf_path, 'rb') as file:
-            reader = PyPDF2.PdfReader(file)
-            for page in reader.pages:
-                text += page.extract_text()
-    except Exception as e:
-        print(f"Erro ao ler PDF {pdf_path}: {e}")
-    return text
-
-def find_pa_name_in_text(text):
-    patterns = [
-        r'PA\s+([^\.,:;\n]+)',
-        r'Projeto de Assentamento\s+([^\.,:;\n]+)',
-        r'P\.A\.\s+([^\.,:;\n]+)'
-    ]
-
-    for pattern in patterns:
-        matches = re.finditer(pattern, text, re.IGNORECASE)
-        for match in matches:
-            pa_name = match.group(1).strip()
-            if pa_name:
-                return pa_name
-    return None
-
-def normalize_text(text):
-    if not text:
-        return ""
-    return unidecode.unidecode(text.lower().strip())
-
-def find_best_match_in_csv(pa_name, df_mapping):
-    if not pa_name:
-        return None, None
-
-    normalized_pa = normalize_text(pa_name)
-    choices = df_mapping['Assentamento'].tolist()
-    normalized_choices = [normalize_text(choice) for choice in choices]
-
-    match = process.extractOne(normalized_pa, normalized_choices)
-    if match and match[1] > 80:
-        index = normalized_choices.index(match[0])
-        return df_mapping.iloc[index]['Assentamento'], df_mapping.iloc[index]['nomePA']
-    return None, None
-
 def preprocess_assentamento(assentamento):
     substitutions = {
         "PASAOJOAOMARIA": "SÃO JOÃO MARIA"
     }
     return substitutions.get(assentamento, assentamento)
-
-def rename_unknown_settlement_files(directory_path, df_mapping):
-    print("\nIniciando análise de arquivos com UnknownSettlement...")
-
-    for root, _, files in os.walk(directory_path):
-        for filename in files:
-            if 'UnknownSettlement' in filename and filename.endswith('.pdf'):
-                full_path = os.path.join(root, filename)
-                print(f"\nAnalisando arquivo: {filename}")
-
-                pdf_text = extract_text_from_pdf(full_path)
-                pa_name = find_pa_name_in_text(pdf_text)
-
-                if pa_name:
-                    print(f"Nome do PA encontrado no PDF: {pa_name}")
-
-                    assentamento, nome_pa = find_best_match_in_csv(pa_name, df_mapping)
-
-                    if assentamento and nome_pa:
-                        new_filename = filename.replace('UnknownSettlement', nome_pa)
-                        new_full_path = os.path.join(root, new_filename)
-
-                        try:
-                            shutil.move(full_path, new_full_path)
-                            print(f"Arquivo renomeado com sucesso para: {new_filename}")
-                        except Exception as e:
-                            print(f"Erro ao renomear arquivo: {e}")
-                    else:
-                        print(f"Não foi encontrada correspondência adequada no CSV para: {pa_name}")
-                else:
-                    print(f"Não foi possível encontrar o nome do PA no arquivo PDF")
 
 def process_pdfs_in_directory(directory_path, output_path, df_mapping):
     tipo_documento_map = {
@@ -168,7 +88,7 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
                         'Tipo de documento PGT': tipo_documento_full,
                         'Assentamento': best_assentamento,
                         'Município': municipio,
-                        'Código SIPRA': codsipra,
+                        'Código SIPRA': codsipra,  # Adiciona o Código SIPRA
                         'Nome T1': nome_t1,
                         'Autenticador': autenticador,
                         'Objetivo': objetivo,
@@ -196,25 +116,31 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
         print("Continuando sem ordenação...")
 
     try:
+        # Garante que o diretório de saída existe
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+        # Remove o arquivo existente se houver
         if os.path.exists(output_path):
             try:
                 os.remove(output_path)
                 print(f"Arquivo existente removido: {output_path}")
+                # Pequena pausa para garantir que o sistema de arquivos está atualizado
                 time.sleep(1)
             except Exception as e:
                 print(f"Aviso: Não foi possível remover o arquivo existente: {e}")
 
+        # Tenta salvar o arquivo usando ExcelWriter
         try:
             with pd.ExcelWriter(output_path, engine='openpyxl', mode='w') as writer:
                 df.to_excel(writer, index=False)
             print(f'\nPlanilha gerada com sucesso: {output_path}')
         except Exception as e:
             print(f"Erro ao salvar com ExcelWriter: {e}")
+            # Tenta método alternativo de salvamento
             df.to_excel(output_path, index=False, engine='openpyxl')
             print(f'\nPlanilha gerada com sucesso (método alternativo): {output_path}')
 
+        # Verifica se o arquivo foi realmente criado
         if os.path.exists(output_path):
             print(f'Verificação: arquivo existe no caminho especificado')
         else:
@@ -222,6 +148,7 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
 
     except Exception as e:
         print(f"Erro ao manipular arquivo de saída: {e}")
+        # Tenta salvar em um local alternativo em caso de erro
         alternative_path = os.path.join(os.path.dirname(output_path), 'contPGT_backup.xlsx')
         try:
             df.to_excel(alternative_path, index=False, engine='openpyxl')
@@ -229,13 +156,10 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
         except Exception as e2:
             print(f"Erro ao salvar no local alternativo: {e2}")
 
-    # Após processar todos os arquivos, chama a função para renomear arquivos com UnknownSettlement
-    rename_unknown_settlement_files(directory_path, df_mapping)
-
 # Caminhos dos arquivos
 directory_path = 'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
 output_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_contPGT.xlsx'
-csv_mapping_file = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_codsipraPAsMunicipiosNomePAs.csv'
+csv_mapping_file = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_codsipraPAsMunicipios.csv'
 
 print("\n=== Iniciando processamento ===")
 print(f"Diretório de entrada: {directory_path}")
