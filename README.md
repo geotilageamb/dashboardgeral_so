@@ -55,6 +55,8 @@ As pastas do SharePoint (backend) e as respectivas páginas do dashboard:
     - código python que copia a planilha de informações do SharePoint para o repositório do GitHub
 - [02_codsipraPAsMunicipios.csv](backend/02_SO/02_codsipraPAsMunicipios.csv)
     - arquivo csv que alimenta o código python com os municípios, assentamentos e códigos SIPRA
+- [02_codsipraPAsMunicipiosNomePAs.csv](backend/02_SO/02_codsipraPAsMunicipiosNomePAs.csv)
+    - arquivo csv que alimenta o código python que renomeia os arquivos da PGT com os municípios, assentamentos, nome ajustado do assentamento e códigos SIPRA
 - [02_contPGT.xlsx](backend/02_SO/02_contPGT.xlsx)
     - planilha gerada pelo código python com as informações dos documentos da PGT - Plataforma de Governança Territorial
 
