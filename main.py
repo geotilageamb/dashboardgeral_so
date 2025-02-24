@@ -12,8 +12,8 @@ def main():
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "2.1 Laudos",
         "2.2 Documentação PGT",
-        "2.3 Pareceres conclusivos",
         "2.2.1.1 Documentos recebidos",
+        "2.3 Pareceres conclusivos",
         "2.4 Planilhas monitoramento"
 
     ])
@@ -28,13 +28,13 @@ def main():
         show_dashboard_documentos()
 
     with tab3:
+        st.sidebar.title("Filtros - 2.2.1.1 Documentos recebidos")
+        show_dashboard_docs_recebidos()
+    
+    with tab4:
         st.sidebar.title("Filtros - 2.3 Pareceres conclusivos")
         show_dashboard_pareceres()
         
-    with tab4:
-        st.sidebar.title("Filtros - Documentos recebidos")
-        show_dashboard_docs_recebidos()
-
     with tab5:
         st.sidebar.title("Filtros - 2.4 Planilhas monitoramento")
         show_dashboard_planilhas()
