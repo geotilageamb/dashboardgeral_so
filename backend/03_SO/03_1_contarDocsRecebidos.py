@@ -48,7 +48,7 @@ class LocalizationData:
                 "12deabril": "12 DE ABRIL",
                 "8dejunho": "8 DE JUNHO",
                 "RondonIII": "RONDON III",
-                "RandonIII": "RONDON iii"
+                "RandonIII": "RONDON III"
             }
 
 
