@@ -1,18 +1,30 @@
-import streamlit as st
+"""Dashboard para visualização de documentos recebidos de assentados e NMRFs - Etapa 2.2.1.1"""
+
+import unicodedata
+
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
-# Função para remover caracteres especiais
+
 def remove_special_chars(text):
-    import unicodedata
-    return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
+    """Remove caracteres especiais e acentos de um texto."""
+    if not isinstance(text, str):
+        return text
+    return ''.join(
+        ch for ch in unicodedata.normalize('NFKD', text) 
+        if not unicodedata.combining(ch)
+    )
 
-# Função para carregar os dados da planilha
+
 @st.cache_data
 def load_data():
+    """Carrega os dados do arquivo Excel e armazena em cache."""
     return pd.read_excel('03_contDocsRecebidos.xlsx')
 
+
 def show_dashboard():
+    """Exibe o dashboard com os dados de documentos recebidos."""
     st.header("Etapa 2.2.1.1 da meta 2.2")
     df_docs = load_data()
 
@@ -27,9 +39,21 @@ def show_dashboard():
     assentamentos = ['Todos'] + sorted(df_docs['Assentamento'].unique())
     lotes = ['Todos'] + sorted(df_docs['Lote'].unique())
 
-    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio_docs")
-    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento_docs")
-    selected_lote = st.sidebar.selectbox("Selecione um lote:", lotes, key="lote_docs")
+    selected_municipio = st.sidebar.selectbox(
+        "Selecione um município:", 
+        municipios, 
+        key="municipio_docs"
+    )
+    selected_assentamento = st.sidebar.selectbox(
+        "Selecione um assentamento:", 
+        assentamentos, 
+        key="assentamento_docs"
+    )
+    selected_lote = st.sidebar.selectbox(
+        "Selecione um lote:", 
+        lotes, 
+        key="lote_docs"
+    )
 
     # Aplicar filtros
     if selected_municipio != "Todos":
@@ -52,17 +76,26 @@ def show_dashboard():
 
     # Gráfico de pizza para distribuição de arquivos por município
     st.subheader("Distribuição de Arquivos por Município")
-    fig_municipio = px.pie(df_docs, names='Município', title='Distribuição por Município')
+    fig_municipio = px.pie(
+        df_docs, 
+        names='Município', 
+        title='Distribuição por Município'
+    )
     st.plotly_chart(fig_municipio)
 
     # Gráfico de pizza para distribuição de arquivos por assentamento
     st.subheader("Distribuição de Arquivos por Assentamento")
-    fig_assentamento = px.pie(df_docs, names='Assentamento', title='Distribuição por Assentamento')
+    fig_assentamento = px.pie(
+        df_docs, 
+        names='Assentamento', 
+        title='Distribuição por Assentamento'
+    )
     st.plotly_chart(fig_assentamento)
 
     # Relação geral de documentos
     st.subheader("Relação Geral de Documentos")
     st.write(df_docs)
+
 
 if __name__ == "__main__":
     show_dashboard()
