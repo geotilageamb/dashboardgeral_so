@@ -165,7 +165,7 @@ def show_dashboard():
     with col3:
         if st.button('2024', key='btn_2024'):
             ano_selecionado = 2024
-        with col4:
+    with col4:
         if st.button('2025', key='btn_2025'):
             ano_selecionado = 2025
 
