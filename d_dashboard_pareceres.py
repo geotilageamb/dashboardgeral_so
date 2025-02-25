@@ -1,13 +1,19 @@
-import streamlit as st
+"""Dashboard para visualização de produtos da meta 2.3 - Pareceres conclusivos."""
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import streamlit as st
+
 
 @st.cache_data
 def load_data():
+    """Carrega os dados do arquivo Excel e armazena em cache."""
     return pd.read_excel('04_contPareceres.xlsx')
 
+
 def show_dashboard():
+    """Exibe o dashboard com os dados de pareceres conclusivos."""
     st.header("Produtos da meta 2.3")
     df_pareceres = load_data()
 
@@ -17,22 +23,38 @@ def show_dashboard():
     col1, col2 = st.sidebar.columns(2)
 
     with col1:
-        selected_assentamento = st.selectbox("Assentamento:", assentamentos, key="parecer_assentamento")
+        selected_assentamento = st.selectbox(
+            "Assentamento:", 
+            assentamentos, 
+            key="parecer_assentamento"
+        )
     with col2:
-        selected_tipo = st.selectbox("Tipo:", tipos, key="parecer_tipo")
+        selected_tipo = st.selectbox(
+            "Tipo:", 
+            tipos, 
+            key="parecer_tipo"
+        )
 
     # Aplicar filtros
     if selected_assentamento != "Todos":
-        df_pareceres = df_pareceres[df_pareceres['Assentamento'] == selected_assentamento]
+        df_pareceres = df_pareceres[
+            df_pareceres['Assentamento'] == selected_assentamento
+        ]
     if selected_tipo != "Todos":
         df_pareceres = df_pareceres[df_pareceres['Tipo'] == selected_tipo]
 
     # Métricas principais
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("Padrão", df_pareceres[df_pareceres['Tipo'] == 'Padrão'].shape[0])
+        st.metric(
+            "Padrão", 
+            df_pareceres[df_pareceres['Tipo'] == 'Padrão'].shape[0]
+        )
     with col2:
-        st.metric("Desbloqueio", df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'].shape[0])
+        st.metric(
+            "Desbloqueio", 
+            df_pareceres[df_pareceres['Tipo'] == 'Desbloqueio'].shape[0]
+        )
 
     # Barras de Progresso
     st.subheader("Progresso dos Pareceres")
@@ -53,12 +75,18 @@ def show_dashboard():
     with col1:
         st.markdown("**2.3.1 Pareceres de beneficiário**")
         st.progress(min(percentual_padrao/100, 1.0))
-        st.write(f"{padrao_total} de {total_padrao} pareceres concluídos ({percentual_padrao:.1f}%)")
+        st.write(
+            f"{padrao_total} de {total_padrao} pareceres concluídos "
+            f"({percentual_padrao:.1f}%)"
+        )
 
     with col2:
         st.markdown("**2.3.2 Pareceres para desbloqueio**")
         st.progress(min(percentual_desbloqueio/100, 1.0))
-        st.write(f"{desbloqueio_total} de {total_desbloqueio} pareceres concluídos ({percentual_desbloqueio:.1f}%)")
+        st.write(
+            f"{desbloqueio_total} de {total_desbloqueio} pareceres concluídos "
+            f"({percentual_desbloqueio:.1f}%)"
+        )
 
     # Gráficos
     col1, col2 = st.columns(2)
@@ -87,8 +115,12 @@ def show_dashboard():
     # Dados detalhados
     st.subheader("Relação de pareceres")
     st.dataframe(
-        df_pareceres[['Lote', 'Assentamento', 'Município', 'Código SIPRA', 'Tipo', 'Caminho']]
+        df_pareceres[[
+            'Lote', 'Assentamento', 'Município', 
+            'Código SIPRA', 'Tipo', 'Caminho'
+        ]]
     )
+
 
 if __name__ == "__main__":
     st.set_page_config(
