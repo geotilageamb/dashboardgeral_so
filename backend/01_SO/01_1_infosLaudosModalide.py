@@ -114,9 +114,21 @@ def extrair_lxx(nome_arquivo):
 
 def carregar_datas(csv_path):
     """Carrega datas de mutirão e vistoria de um arquivo CSV."""
+    # Lê o CSV sem converter datas
     df = pd.read_csv(csv_path)
+
+    # Garante que a coluna 'data' esteja no formato correto (DD/MM/YYYY)
+    # Primeiro converte para datetime e depois para string no formato desejado
+    df['data'] = pd.to_datetime(df['data'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')
+
+    # Obtém as listas de datas para cada tipo
     datas_mtr = df[df['tipo'] == 'mutirao']['data'].tolist()
     datas_vl = df[df['tipo'] == 'vistoria']['data'].tolist()
+
+    # Garante que não há espaços extras
+    datas_mtr = [d.strip() for d in datas_mtr]
+    datas_vl = [d.strip() for d in datas_vl]
+
     return datas_mtr, datas_vl
 
 
@@ -166,6 +178,9 @@ def main():
                     print(f"Falha ao extrair data do arquivo: {caminho_completo}")
                     continue
 
+                # Garante que a data extraída está no formato correto e sem espaços extras
+                data = data.strip() if data else None
+
                 tipo_laudo = verificar_tipo_laudo(arquivo)
                 lxx = extrair_lxx(arquivo)
                 tecnico = extrair_tecnico_pdf(caminho_completo)
@@ -181,6 +196,11 @@ def main():
                     modalidade = "MUTIRÃO"
                 elif data in datas_vl:
                     modalidade = "VISTORIA IN LOCO"
+
+                # Para depuração - remova ou comente estas linhas após resolver o problema
+                if assentamento and "Tibagi" in assentamento and not modalidade:
+                    print(f"Data do PDF: '{data}' não encontrada nas datas de vistoria")
+                    print(f"Datas de vistoria disponíveis: {datas_vl[:5]}...")
 
                 resultados.append({
                     'Código SIPRA': codigo_sipra,
