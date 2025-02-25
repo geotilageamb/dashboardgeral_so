@@ -1,22 +1,30 @@
-import streamlit as st
-import pandas as pd
-from datetime import datetime
-import plotly.express as px
+"""Dashboard para visualização de dados de laudos de supervisão ocupacional."""
+
 import unicodedata
+from datetime import datetime
+
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+
 
 # Use o decorador st.cache_data para armazenar em cache o carregamento dos dados
 @st.cache_data
 def load_data(file_path):
+    """Carrega os dados do arquivo Excel e armazena em cache."""
     # Carregar os dados do Excel
     df = pd.read_excel(file_path)
     return df
 
+
 def show_dashboard():
+    """Exibe o dashboard com os dados de laudos."""
     # Função para remover caracteres especiais e normalizar texto
     def remove_special_chars(text):
         if not isinstance(text, str):
             return text  # Retorna o valor original se não for uma string
-        return ''.join(ch for ch in unicodedata.normalize('NFKD', text) if not unicodedata.combining(ch))
+        return ''.join(ch for ch in unicodedata.normalize('NFKD', text) 
+                      if not unicodedata.combining(ch))
 
     # Caminho do arquivo Excel
     file_path = "01_laudos_SO_infos.xlsx"
@@ -84,12 +92,18 @@ def show_dashboard():
     end_date = datetime.now().date()
 
     # Filtros laterais
-    selected_tecnico = st.sidebar.selectbox("Selecione um técnico:", tecnicos, key="tecnico")
-    selected_municipio = st.sidebar.selectbox("Selecione um município:", municipios, key="municipio")
-    selected_assentamento = st.sidebar.selectbox("Selecione um assentamento:", assentamentos, key="assentamento")
-    selected_tipo_laudo = st.sidebar.selectbox("Selecione um tipo de laudo:", tipos_de_laudo, key="tipo_laudo")
-    selected_modalidade = st.sidebar.selectbox("Selecione uma modalidade:", modalidade, key="modalidade")
-    selected_codigo_sipra = st.sidebar.selectbox("Selecione um Código SIPRA:", codigos_sipra, key="codigo_sipra")
+    selected_tecnico = st.sidebar.selectbox(
+        "Selecione um técnico:", tecnicos, key="tecnico")
+    selected_municipio = st.sidebar.selectbox(
+        "Selecione um município:", municipios, key="municipio")
+    selected_assentamento = st.sidebar.selectbox(
+        "Selecione um assentamento:", assentamentos, key="assentamento")
+    selected_tipo_laudo = st.sidebar.selectbox(
+        "Selecione um tipo de laudo:", tipos_de_laudo, key="tipo_laudo")
+    selected_modalidade = st.sidebar.selectbox(
+        "Selecione uma modalidade:", modalidade, key="modalidade")
+    selected_codigo_sipra = st.sidebar.selectbox(
+        "Selecione um Código SIPRA:", codigos_sipra, key="codigo_sipra")
 
     # Filtrar por técnico
     if selected_tecnico != "Todos":
@@ -116,8 +130,10 @@ def show_dashboard():
         df = df[df['Código SIPRA'] == selected_codigo_sipra]
 
     # Filtrar por data
-    start_date = st.sidebar.date_input("Data inicial:", start_date, key="start_date")
-    end_date = st.sidebar.date_input("Data final:", end_date, key="end_date")
+    start_date = st.sidebar.date_input(
+        "Data inicial:", start_date, key="start_date")
+    end_date = st.sidebar.date_input(
+        "Data final:", end_date, key="end_date")
     df = df[(df['Data'].dt.date >= start_date) & (df['Data'].dt.date <= end_date)]
 
     # Exibir tabela interativa
@@ -158,10 +174,12 @@ def show_dashboard():
     df_ano = df[df['Data'].dt.year == ano_selecionado]
 
     # Criar gráfico de barras mensal
-    laudos_por_mes = df_ano.groupby(df_ano['Data'].dt.month).size().reindex(range(1, 13), fill_value=0)
+    laudos_por_mes = df_ano.groupby(df_ano['Data'].dt.month).size().reindex(
+        range(1, 13), fill_value=0)
 
     # Converter números dos meses para nomes
-    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+             'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
     laudos_por_mes.index = meses
 
     fig_mensal = px.bar(
@@ -180,7 +198,11 @@ def show_dashboard():
     # Gráfico de pizza - tipo de laudo
     st.subheader("Gráfico de pizza - tipo de laudo")
     pie_chart_data = df['Tipo de Laudo'].value_counts()
-    fig = px.pie(names=pie_chart_data.index, values=pie_chart_data.values, title='Distribuição dos Laudos')
+    fig = px.pie(
+        names=pie_chart_data.index, 
+        values=pie_chart_data.values, 
+        title='Distribuição dos Laudos'
+    )
     st.plotly_chart(fig)
 
     # Calcular o total de laudos para cada tipo de laudo
@@ -197,6 +219,7 @@ def show_dashboard():
     # Exibir quadro com os totais
     st.subheader("Quantidade de laudos por tipo")
     st.write(total_por_tipo_laudo)
+
 
 if __name__ == "__main__":
     show_dashboard()
