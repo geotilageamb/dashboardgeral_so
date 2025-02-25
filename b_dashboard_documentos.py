@@ -17,8 +17,9 @@ def show_dashboard():
     st.header("Produtos da meta 2.2")
     df_pgt = load_data()
 
+    # Correção do chained assignment
     if 'Objetivo' in df_pgt.columns:
-        df_pgt['Objetivo'].fillna('Não especificado', inplace=True)
+        df_pgt['Objetivo'] = df_pgt['Objetivo'].fillna('Não especificado')
 
     if 'Município' not in df_pgt.columns:
         st.error("A coluna 'Município' não está presente nos dados.")
