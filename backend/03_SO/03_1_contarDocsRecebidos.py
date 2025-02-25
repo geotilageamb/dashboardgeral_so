@@ -1,3 +1,5 @@
+"""Módulo para processamento de dados de localização de assentamentos."""
+
 import os
 import re
 import pandas as pd
@@ -5,14 +7,17 @@ from thefuzz import process
 
 
 class LocalizationData:
+    """Classe para gerenciar dados de localização e exceções."""
+
     def __init__(self):
+        """Inicializa diretórios e dicionários de exceções."""
         self.root_directory = ('D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/'
-                             '02_SO/11_municipiosPAs')
+                               '02_SO/11_municipiosPAs')
         self.output_directory = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                               '03_equipeGEOTI/08_automacoes/03_SO')
+                                 '03_equipeGEOTI/08_automacoes/03_SO')
         self.csv_mapping_file = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                               '03_equipeGEOTI/08_automacoes/03_SO/'
-                               '03_codsipraPAsMunicipios.csv')
+                                 '03_equipeGEOTI/08_automacoes/03_SO/'
+                                 '03_codsipraPAsMunicipios.csv')
 
         # Dicionários de exceções carregados do CSV
         self.municipio_exceptions = {}
@@ -20,6 +25,7 @@ class LocalizationData:
         self.load_exceptions()
 
     def load_exceptions(self):
+        """Carrega exceções de um arquivo CSV ou usa valores padrão."""
         try:
             df_exceptions = pd.read_csv(
                 os.path.join(self.output_directory, 'exceptions.csv')
@@ -53,7 +59,10 @@ class LocalizationData:
 
 
 class DataProcessor:
+    """Classe para processar dados de arquivos PDF."""
+
     def __init__(self, localization_data):
+        """Inicializa o processador com dados de localização."""
         self.loc_data = localization_data
         self.df_mapping = None
         self.assentamento_to_municipio = {}
