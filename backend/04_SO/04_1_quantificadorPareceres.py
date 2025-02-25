@@ -1,10 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Script para processar documentos PDF e gerar planilha com informações de assentamentos.
+"""
+
 import os
-import pandas as pd
-from thefuzz import process
-import PyPDF2
 import re
+import pandas as pd
+import PyPDF2
+from thefuzz import process
+
 
 def load_mapping(csv_file):
+    """Carrega o arquivo CSV de mapeamento."""
     try:
         df_mapping = pd.read_csv(csv_file)
         return df_mapping
@@ -12,7 +20,9 @@ def load_mapping(csv_file):
         print(f"Erro ao ler arquivo CSV: {str(e)}")
         return pd.DataFrame()
 
+
 def read_pdf_content(file_path):
+    """Extrai o texto da última página de um arquivo PDF."""
     try:
         with open(file_path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
@@ -22,7 +32,9 @@ def read_pdf_content(file_path):
         print(f"Erro ao ler PDF {file_path}: {str(e)}")
         return ""
 
+
 def check_document_type(content):
+    """Verifica o tipo de documento com base no conteúdo."""
     if not content:
         return "Padrão"
 
@@ -40,13 +52,17 @@ def check_document_type(content):
 
     return "Padrão"
 
+
 def get_assentamento_info(filename, df_mapping):
+    """Extrai informações do assentamento a partir do nome do arquivo."""
     try:
         nome_assentamento = filename.split('_PA')[1].split('_')[0].strip()
 
-        match = process.extractOne(nome_assentamento, 
-                                 df_mapping['Assentamento'].tolist(),
-                                 score_cutoff=60)
+        match = process.extractOne(
+            nome_assentamento,
+            df_mapping['Assentamento'].tolist(),
+            score_cutoff=60
+        )
 
         if match:
             assentamento_match = match[0]
@@ -59,7 +75,9 @@ def get_assentamento_info(filename, df_mapping):
 
     return 'N/A', 'N/A', 'N/A'
 
+
 def generate_spreadsheet_from_folder(folder_path, csv_path, output_path):
+    """Gera uma planilha com informações dos documentos PDF em uma pasta."""
     df_mapping = load_mapping(csv_path)
     if df_mapping.empty:
         print("Erro: Não foi possível carregar o arquivo de mapeamento.")
@@ -67,14 +85,14 @@ def generate_spreadsheet_from_folder(folder_path, csv_path, output_path):
 
     data = []
 
-    for root, dirs, files in os.walk(folder_path):
+    for root, _, files in os.walk(folder_path):
         for filename in files:
-            if ('parecerconclusivo' in filename.lower() and 
-                filename.endswith('.pdf') and
-                'ocupante_' not in filename.lower()):
+            if ('parecerconclusivo' in filename.lower() and
+                    filename.endswith('.pdf') and
+                    'ocupante_' not in filename.lower()):
                 try:
                     parts = filename.split('_')
-                    lote = parts[0] if len(parts) > 0 else 'N/A'
+                    lote = parts[0] if parts else 'N/A'
 
                     assentamento, municipio, codsipra = get_assentamento_info(filename, df_mapping)
 
@@ -113,9 +131,16 @@ def generate_spreadsheet_from_folder(folder_path, csv_path, output_path):
     except Exception as e:
         print(f"Erro ao salvar a planilha: {str(e)}")
 
-# Caminhos para os arquivos
-folder_path = 'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
-csv_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/04_SO/04_codsipraPAsMunicipios.csv'
-output_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/04_SO/04_contPareceres.xlsx'
 
-generate_spreadsheet_from_folder(folder_path, csv_path, output_path)
+def main():
+    """Função principal que executa o script."""
+    # Caminhos para os arquivos
+    folder_path = 'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
+    csv_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/04_SO/04_codsipraPAsMunicipios.csv'
+    output_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/04_SO/04_contPareceres.xlsx'
+
+    generate_spreadsheet_from_folder(folder_path, csv_path, output_path)
+
+
+if __name__ == "__main__":
+    main()
