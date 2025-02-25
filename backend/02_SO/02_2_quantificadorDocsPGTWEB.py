@@ -2,6 +2,31 @@ import os
 import pandas as pd
 from thefuzz import process
 import time
+import re
+
+class LocalizationData:
+    def __init__(self):
+        self.csv_mapping_file = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_codsipraPAsMunicipios.csv'
+
+        # Dicionários de exceções
+        self.municipio_exceptions = {
+            "diamantedoeste": "DIAMANTE DO OESTE",
+            "mangueirinha": "MANGUEIRINHA",
+        }
+        self.assentamento_exceptions = {
+            "paanderrodolfohenrique": "ANDER RODOLFO HENRIQUE",
+            "pa13denovembro": "13 DE NOVEMBRO",
+            "pavitoriadauniaodoparana": "VITÓRIA DA UNIÃO DO PARANÁ",
+            "vitoriadauniaodoparana": "VITÓRIA DA UNIÃO DO PARANÁ",
+            "e.viva": "ESPERANÇA VIVA",
+            "pa12deabril": "12 DE ABRIL",
+            "12deabril": "12 DE ABRIL",
+            "8dejunho": "8 DE JUNHO",
+            "RondonIII": "RONDON III",
+            "RandonIII": "RONDON III",
+            "PASAOJOAOMARIA": "SÃO JOÃO MARIA",
+            "PAJOSEDIAS": "JOSÉ DIAS",
+        }
 
 def extract_info_from_filename(filename):
     base_name = os.path.splitext(filename)[0]
@@ -26,24 +51,108 @@ def load_mapping(csv_file):
     try:
         df_mapping = pd.read_csv(csv_file, delimiter=',')
         print(f"Arquivo de mapeamento carregado com sucesso. Total de registros: {len(df_mapping)}")
-        return df_mapping
+
+        # Criar dicionários de mapeamento
+        assentamento_to_municipio = dict(zip(
+            df_mapping['Assentamento'].str.upper(),
+            df_mapping['Município'].str.upper()
+        ))
+        assentamento_to_codsipra = dict(zip(
+            df_mapping['Assentamento'].str.upper(),
+            df_mapping['Codsipra']
+        ))
+
+        return df_mapping, assentamento_to_municipio, assentamento_to_codsipra
     except Exception as e:
         print(f"Erro ao carregar arquivo de mapeamento: {e}")
         raise
 
-def find_best_match(name, choices):
+def find_best_match(name, choices, threshold=80):
+    """Encontra a melhor correspondência usando fuzzy matching."""
     if not name:
         return 'Desconhecido'
     match, score, _ = process.extractOne(name, choices)
-    return match if score > 80 else 'Desconhecido'
+    return match if score > threshold else 'Desconhecido'
 
-def preprocess_assentamento(assentamento):
-    substitutions = {
-        "PASAOJOAOMARIA": "SÃO JOÃO MARIA"
-    }
-    return substitutions.get(assentamento, assentamento)
+def preprocess_assentamento(assentamento, assentamento_exceptions):
+    """Processa o nome do assentamento usando exceções e regras de formatação."""
+    # Primeiro verifica se o assentamento está nas exceções
+    assentamento_lower = assentamento.lower()
+    for key, value in assentamento_exceptions.items():
+        if key.lower() == assentamento_lower:
+            return value.upper()
 
-def process_pdfs_in_directory(directory_path, output_path, df_mapping):
+    # Processa o nome do assentamento
+    # Adiciona espaços entre palavras em CamelCase
+    processed_name = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', assentamento)
+    # Remove prefixo PA se existir
+    if processed_name.upper().startswith("PA"):
+        processed_name = processed_name[2:]
+    # Remove underscores e adiciona espaços
+    processed_name = processed_name.replace('_', ' ')
+    # Remove espaços extras
+    processed_name = ' '.join(processed_name.split())
+
+    return processed_name.upper()
+
+def extract_assentamento_from_path(file_path, assentamento_exceptions):
+    """Extrai o nome do assentamento do caminho do arquivo usando regex."""
+    file_path_lower = file_path.lower()
+
+    # Verifica primeiro as exceções
+    for key, value in assentamento_exceptions.items():
+        if key.lower() in file_path_lower:
+            return value.upper()
+
+    # Lista para armazenar todas as ocorrências encontradas
+    assentamento_names = []
+
+    # Procura o padrão PA no formato pasta
+    pa_folder_match = re.search(r'\\(\d+_pa([^\\/]+))', file_path_lower)
+    if pa_folder_match:
+        assentamento = pa_folder_match.group(2).replace('_', ' ')
+        if assentamento.startswith("pa"):
+            assentamento = assentamento[2:]
+        assentamento_names.append(assentamento)
+
+    # Procura outras ocorrências do nome do PA no caminho
+    pa_matches = re.finditer(r'pa([a-zA-Z0-9]+)', file_path_lower)
+    for match in pa_matches:
+        assentamento = match.group(1)
+        if assentamento not in assentamento_names:
+            assentamento_names.append(assentamento)
+
+    # Procura o nome sem o prefixo PA
+    if assentamento_names:
+        # Pega o primeiro nome encontrado e procura outras ocorrências similares
+        base_name = assentamento_names[0]
+        # Remove números e caracteres especiais para ter apenas o nome base
+        base_name_clean = re.sub(r'[0-9_\s]', '', base_name)
+        if len(base_name_clean) > 3:  # Evita matches com strings muito curtas
+            other_matches = re.finditer(
+                f'{base_name_clean}[a-zA-Z0-9]*',
+                file_path_lower
+            )
+            for match in other_matches:
+                found_name = match.group(0)
+                if found_name not in assentamento_names:
+                    assentamento_names.append(found_name)
+
+    if not assentamento_names:
+        return ''
+
+    # Processa o nome mais longo encontrado (geralmente o mais completo)
+    best_name = max(assentamento_names, key=len)
+    # Adiciona espaços entre palavras em CamelCase
+    processed_name = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', best_name)
+    # Remove underscores e adiciona espaços
+    processed_name = processed_name.replace('_', ' ')
+    # Remove espaços extras
+    processed_name = ' '.join(processed_name.split())
+
+    return processed_name.upper()
+
+def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentamento_to_municipio, assentamento_to_codsipra, loc_data):
     tipo_documento_map = {
         'analiseRegularizacao': 'Análise para regularização',
         'relatorioConformidadesRegularizacao': 'Relatório de conformidades para regularização',
@@ -61,14 +170,23 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
         print(f"\nEncontrados {len(pdf_files)} arquivos PDF em: {root}")
 
         for filename in pdf_files:
+            full_path = os.path.join(root, filename)
             check_filename = filename[2:] if filename.startswith('2_') else filename
 
             if any(check_filename.startswith(prefix) for prefix in valid_prefixes):
                 try:
                     print(f"Processando: {filename}")
-                    tipo_documento, assentamento, nome_t1, autenticador, is_second_report = extract_info_from_filename(filename)
+                    tipo_documento, assentamento_from_filename, nome_t1, autenticador, is_second_report = extract_info_from_filename(filename)
 
-                    assentamento = preprocess_assentamento(assentamento)
+                    # Processa o nome do assentamento usando a lógica do primeiro código
+                    assentamento_from_filename = preprocess_assentamento(assentamento_from_filename, loc_data.assentamento_exceptions)
+
+                    # Tenta extrair o assentamento do caminho do arquivo também
+                    assentamento_from_path = extract_assentamento_from_path(full_path, loc_data.assentamento_exceptions)
+
+                    # Usa o nome mais longo entre os dois métodos
+                    assentamento = assentamento_from_path if len(assentamento_from_path) > len(assentamento_from_filename) else assentamento_from_filename
+
                     tipo_documento_full = tipo_documento_map.get(tipo_documento, tipo_documento)
                     if is_second_report:
                         tipo_documento_full += ' (2º Relatório)'
@@ -79,16 +197,18 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping):
                     elif 'Titulacao' in tipo_documento:
                         objetivo = 'Titulação'
 
+                    # Encontra a melhor correspondência para o assentamento
                     best_assentamento = find_best_match(assentamento, df_mapping['Assentamento'])
-                    municipio_row = df_mapping[df_mapping['Assentamento'] == best_assentamento]
-                    municipio = municipio_row['Município'].values[0] if not municipio_row.empty else 'Desconhecido'
-                    codsipra = municipio_row['Codsipra'].values[0] if not municipio_row.empty else 'Desconhecido'
+
+                    # Obtém o município e código SIPRA do dicionário de mapeamento
+                    municipio = assentamento_to_municipio.get(best_assentamento.upper(), 'Desconhecido')
+                    codsipra = assentamento_to_codsipra.get(best_assentamento.upper(), 'Desconhecido')
 
                     data.append({
                         'Tipo de documento PGT': tipo_documento_full,
                         'Assentamento': best_assentamento,
                         'Município': municipio,
-                        'Código SIPRA': codsipra,  # Adiciona o Código SIPRA
+                        'Código SIPRA': codsipra,
                         'Nome T1': nome_t1,
                         'Autenticador': autenticador,
                         'Objetivo': objetivo,
@@ -167,8 +287,15 @@ print(f"Arquivo de saída: {output_path}")
 print(f"Arquivo de mapeamento: {csv_mapping_file}")
 
 try:
-    df_mapping = load_mapping(csv_mapping_file)
-    process_pdfs_in_directory(directory_path, output_path, df_mapping)
+    # Inicializa a classe de dados de localização
+    loc_data = LocalizationData()
+
+    # Carrega o mapeamento e cria os dicionários
+    df_mapping, assentamento_to_municipio, assentamento_to_codsipra = load_mapping(csv_mapping_file)
+
+    # Processa os arquivos PDF
+    process_pdfs_in_directory(directory_path, output_path, df_mapping, 
+                             assentamento_to_municipio, assentamento_to_codsipra, loc_data)
 except Exception as e:
     print(f"\nErro crítico durante a execução: {e}")
 
