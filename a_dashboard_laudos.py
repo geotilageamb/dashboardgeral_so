@@ -154,7 +154,7 @@ def show_dashboard():
 
     # Adicionar seletor de ano
     anos_disponiveis = sorted(df['Data'].dt.year.unique())
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         if st.button('2022', key='btn_2022'):
@@ -165,6 +165,9 @@ def show_dashboard():
     with col3:
         if st.button('2024', key='btn_2024'):
             ano_selecionado = 2024
+        with col4:
+        if st.button('2025', key='btn_2025'):
+            ano_selecionado = 2025
 
     # Definir ano padrão se nenhum botão foi pressionado
     if 'ano_selecionado' not in locals():
