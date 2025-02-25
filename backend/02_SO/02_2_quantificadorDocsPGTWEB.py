@@ -1,12 +1,20 @@
+"""Módulo para processamento de arquivos PDF e extração de informações."""
+
 import os
+import re
+import time
 import pandas as pd
 from thefuzz import process
-import time
-import re
+
 
 class LocalizationData:
+    """Classe para armazenar dados de localização e exceções."""
+
     def __init__(self):
-        self.csv_mapping_file = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_codsipraPAsMunicipios.csv'
+        """Inicializa a classe com caminhos de arquivos e dicionários de exceções."""
+        self.csv_mapping_file = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
+                                '03_equipeGEOTI/08_automacoes/02_SO/'
+                                '02_codsipraPAsMunicipios.csv')
 
         # Dicionários de exceções
         self.municipio_exceptions = {
@@ -28,7 +36,19 @@ class LocalizationData:
             "PAJOSEDIAS": "JOSÉ DIAS",
         }
 
+
 def extract_info_from_filename(filename):
+    """Extrai informações do nome do arquivo.
+
+    Args:
+        filename: Nome do arquivo a ser processado
+
+    Returns:
+        Tupla com tipo_documento, assentamento, nome_t1, autenticador e is_second_report
+
+    Raises:
+        ValueError: Se o nome do arquivo não estiver no formato esperado
+    """
     base_name = os.path.splitext(filename)[0]
 
     is_second_report = base_name.startswith('2_')
@@ -47,10 +67,23 @@ def extract_info_from_filename(filename):
 
     return tipo_documento, assentamento, nome_t1, autenticador, is_second_report
 
+
 def load_mapping(csv_file):
+    """Carrega o arquivo de mapeamento e cria dicionários.
+
+    Args:
+        csv_file: Caminho para o arquivo CSV de mapeamento
+
+    Returns:
+        Tupla com dataframe de mapeamento e dicionários de mapeamento
+
+    Raises:
+        Exception: Se ocorrer erro ao carregar o arquivo
+    """
     try:
         df_mapping = pd.read_csv(csv_file, delimiter=',')
-        print(f"Arquivo de mapeamento carregado com sucesso. Total de registros: {len(df_mapping)}")
+        print(f"Arquivo de mapeamento carregado com sucesso. "
+              f"Total de registros: {len(df_mapping)}")
 
         # Criar dicionários de mapeamento
         assentamento_to_municipio = dict(zip(
@@ -67,15 +100,34 @@ def load_mapping(csv_file):
         print(f"Erro ao carregar arquivo de mapeamento: {e}")
         raise
 
+
 def find_best_match(name, choices, threshold=80):
-    """Encontra a melhor correspondência usando fuzzy matching."""
+    """Encontra a melhor correspondência usando fuzzy matching.
+
+    Args:
+        name: Nome a ser procurado
+        choices: Lista de opções para comparação
+        threshold: Limite mínimo de pontuação para considerar uma correspondência
+
+    Returns:
+        Melhor correspondência encontrada ou 'Desconhecido'
+    """
     if not name:
         return 'Desconhecido'
     match, score, _ = process.extractOne(name, choices)
     return match if score > threshold else 'Desconhecido'
 
+
 def preprocess_assentamento(assentamento, assentamento_exceptions):
-    """Processa o nome do assentamento usando exceções e regras de formatação."""
+    """Processa o nome do assentamento usando exceções e regras de formatação.
+
+    Args:
+        assentamento: Nome do assentamento a ser processado
+        assentamento_exceptions: Dicionário de exceções para nomes de assentamentos
+
+    Returns:
+        Nome do assentamento processado
+    """
     # Primeiro verifica se o assentamento está nas exceções
     assentamento_lower = assentamento.lower()
     for key, value in assentamento_exceptions.items():
@@ -95,8 +147,17 @@ def preprocess_assentamento(assentamento, assentamento_exceptions):
 
     return processed_name.upper()
 
+
 def extract_assentamento_from_path(file_path, assentamento_exceptions):
-    """Extrai o nome do assentamento do caminho do arquivo usando regex."""
+    """Extrai o nome do assentamento do caminho do arquivo usando regex.
+
+    Args:
+        file_path: Caminho completo do arquivo
+        assentamento_exceptions: Dicionário de exceções para nomes de assentamentos
+
+    Returns:
+        Nome do assentamento extraído do caminho
+    """
     file_path_lower = file_path.lower()
 
     # Verifica primeiro as exceções
@@ -152,7 +213,20 @@ def extract_assentamento_from_path(file_path, assentamento_exceptions):
 
     return processed_name.upper()
 
-def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentamento_to_municipio, assentamento_to_codsipra, loc_data):
+
+def process_pdfs_in_directory(directory_path, output_path, df_mapping, 
+                             assentamento_to_municipio, assentamento_to_codsipra, 
+                             loc_data):
+    """Processa arquivos PDF em um diretório e gera uma planilha com os dados.
+
+    Args:
+        directory_path: Caminho do diretório com os arquivos PDF
+        output_path: Caminho para salvar a planilha de saída
+        df_mapping: DataFrame com mapeamento de assentamentos
+        assentamento_to_municipio: Dicionário de mapeamento assentamento->município
+        assentamento_to_codsipra: Dicionário de mapeamento assentamento->código SIPRA
+        loc_data: Instância da classe LocalizationData com dados de exceções
+    """
     tipo_documento_map = {
         'analiseRegularizacao': 'Análise para regularização',
         'relatorioConformidadesRegularizacao': 'Relatório de conformidades para regularização',
@@ -165,7 +239,7 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentame
 
     print(f"\nBuscando arquivos PDF em: {directory_path}")
 
-    for root, dirs, files in os.walk(directory_path):
+    for root, _, files in os.walk(directory_path):
         pdf_files = [f for f in files if f.endswith('.pdf')]
         print(f"\nEncontrados {len(pdf_files)} arquivos PDF em: {root}")
 
@@ -176,16 +250,26 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentame
             if any(check_filename.startswith(prefix) for prefix in valid_prefixes):
                 try:
                     print(f"Processando: {filename}")
-                    tipo_documento, assentamento_from_filename, nome_t1, autenticador, is_second_report = extract_info_from_filename(filename)
+                    tipo_documento, assentamento_from_filename, nome_t1, autenticador, is_second_report = (
+                        extract_info_from_filename(filename)
+                    )
 
-                    # Processa o nome do assentamento usando a lógica do primeiro código
-                    assentamento_from_filename = preprocess_assentamento(assentamento_from_filename, loc_data.assentamento_exceptions)
+                    # Processa o nome do assentamento
+                    assentamento_from_filename = preprocess_assentamento(
+                        assentamento_from_filename, 
+                        loc_data.assentamento_exceptions
+                    )
 
                     # Tenta extrair o assentamento do caminho do arquivo também
-                    assentamento_from_path = extract_assentamento_from_path(full_path, loc_data.assentamento_exceptions)
+                    assentamento_from_path = extract_assentamento_from_path(
+                        full_path, 
+                        loc_data.assentamento_exceptions
+                    )
 
                     # Usa o nome mais longo entre os dois métodos
-                    assentamento = assentamento_from_path if len(assentamento_from_path) > len(assentamento_from_filename) else assentamento_from_filename
+                    assentamento = (assentamento_from_path 
+                                   if len(assentamento_from_path) > len(assentamento_from_filename) 
+                                   else assentamento_from_filename)
 
                     tipo_documento_full = tipo_documento_map.get(tipo_documento, tipo_documento)
                     if is_second_report:
@@ -198,11 +282,20 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentame
                         objetivo = 'Titulação'
 
                     # Encontra a melhor correspondência para o assentamento
-                    best_assentamento = find_best_match(assentamento, df_mapping['Assentamento'])
+                    best_assentamento = find_best_match(
+                        assentamento, 
+                        df_mapping['Assentamento']
+                    )
 
                     # Obtém o município e código SIPRA do dicionário de mapeamento
-                    municipio = assentamento_to_municipio.get(best_assentamento.upper(), 'Desconhecido')
-                    codsipra = assentamento_to_codsipra.get(best_assentamento.upper(), 'Desconhecido')
+                    municipio = assentamento_to_municipio.get(
+                        best_assentamento.upper(), 
+                        'Desconhecido'
+                    )
+                    codsipra = assentamento_to_codsipra.get(
+                        best_assentamento.upper(), 
+                        'Desconhecido'
+                    )
 
                     data.append({
                         'Tipo de documento PGT': tipo_documento_full,
@@ -276,27 +369,46 @@ def process_pdfs_in_directory(directory_path, output_path, df_mapping, assentame
         except Exception as e2:
             print(f"Erro ao salvar no local alternativo: {e2}")
 
-# Caminhos dos arquivos
-directory_path = 'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
-output_path = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_contPGT.xlsx'
-csv_mapping_file = 'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/08_automacoes/02_SO/02_codsipraPAsMunicipios.csv'
 
-print("\n=== Iniciando processamento ===")
-print(f"Diretório de entrada: {directory_path}")
-print(f"Arquivo de saída: {output_path}")
-print(f"Arquivo de mapeamento: {csv_mapping_file}")
+def main():
+    """Função principal que executa o processamento completo."""
+    # Caminhos dos arquivos
+    directory_path = ('D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/'
+                     '02_SO/11_municipiosPAs')
+    output_path = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
+                  '03_equipeGEOTI/08_automacoes/02_SO/02_contPGT.xlsx')
+    csv_mapping_file = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
+                       '03_equipeGEOTI/08_automacoes/02_SO/'
+                       '02_codsipraPAsMunicipios.csv')
 
-try:
-    # Inicializa a classe de dados de localização
-    loc_data = LocalizationData()
+    print("\n=== Iniciando processamento ===")
+    print(f"Diretório de entrada: {directory_path}")
+    print(f"Arquivo de saída: {output_path}")
+    print(f"Arquivo de mapeamento: {csv_mapping_file}")
 
-    # Carrega o mapeamento e cria os dicionários
-    df_mapping, assentamento_to_municipio, assentamento_to_codsipra = load_mapping(csv_mapping_file)
+    try:
+        # Inicializa a classe de dados de localização
+        loc_data = LocalizationData()
 
-    # Processa os arquivos PDF
-    process_pdfs_in_directory(directory_path, output_path, df_mapping, 
-                             assentamento_to_municipio, assentamento_to_codsipra, loc_data)
-except Exception as e:
-    print(f"\nErro crítico durante a execução: {e}")
+        # Carrega o mapeamento e cria os dicionários
+        df_mapping, assentamento_to_municipio, assentamento_to_codsipra = load_mapping(
+            csv_mapping_file
+        )
 
-print("\n=== Processamento finalizado ===")
+        # Processa os arquivos PDF
+        process_pdfs_in_directory(
+            directory_path, 
+            output_path, 
+            df_mapping, 
+            assentamento_to_municipio, 
+            assentamento_to_codsipra, 
+            loc_data
+        )
+    except Exception as e:
+        print(f"\nErro crítico durante a execução: {e}")
+
+    print("\n=== Processamento finalizado ===")
+
+
+if __name__ == "__main__":
+    main()
