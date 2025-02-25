@@ -1,241 +1,422 @@
-"""Módulo para extração de informações de laudos em PDFs."""
-
+"""
+Script para processamento de arquivos PDF e geração de relatório em Excel.
+Extrai informações de nomes de arquivos e conteúdo de PDFs relacionados a assentamentos.
+"""
 import os
-import re
 import pandas as pd
+from thefuzz import process
+import time
 import PyPDF2
+import re
+import unidecode
+import shutil
 
 
-def carregar_padronizacao_tecnicos(csv_path):
-    """Carrega o dicionário de padronização dos nomes dos técnicos de um CSV."""
-    df = pd.read_csv(csv_path)
-    return dict(zip(df['Nome Original'], df['Nome Padronizado']))
+def extract_info_from_filename(filename):
+    """
+    Extrai informações do nome do arquivo conforme formato esperado.
+
+    Args:
+        filename: Nome do arquivo a ser processado
+
+    Returns:
+        Tupla com tipo_documento, assentamento, nome_t1, autenticador e is_second_report
+    """
+    base_name = os.path.splitext(filename)[0]
+
+    is_second_report = base_name.startswith('2_')
+    if is_second_report:
+        base_name = base_name[2:]
+
+    parts = base_name.split('_')
+
+    if len(parts) < 4:
+        raise ValueError(
+            f"Nome do arquivo '{filename}' não está no formato esperado."
+        )
+
+    tipo_documento = parts[0]
+    assentamento = parts[1]
+    nome_t1 = parts[2]
+    autenticador = parts[3]
+
+    return (
+        tipo_documento, 
+        assentamento, 
+        nome_t1, 
+        autenticador, 
+        is_second_report
+    )
 
 
-def padronizar_nome_tecnico(nome, padronizacao_tecnicos):
-    """Padroniza os nomes dos técnicos."""
-    return padronizacao_tecnicos.get(nome, nome)
+def load_mapping(csv_file):
+    """
+    Carrega o arquivo CSV de mapeamento.
+
+    Args:
+        csv_file: Caminho para o arquivo CSV
+
+    Returns:
+        DataFrame com os dados do mapeamento
+    """
+    try:
+        df_mapping = pd.read_csv(csv_file, delimiter=',')
+        print(
+            f"Arquivo de mapeamento carregado com sucesso. "
+            f"Total de registros: {len(df_mapping)}"
+        )
+        return df_mapping
+    except Exception as e:
+        print(f"Erro ao carregar arquivo de mapeamento: {e}")
+        raise
 
 
-def encontrar_texto(caminho_pdf, trecho):
-    """Encontra um trecho de texto em um PDF."""
-    with open(caminho_pdf, 'rb') as pdf_file:
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
-        for page in pdf_reader.pages:
-            text = page.extract_text()
-            if trecho in text:
-                return True
-    return False
+def find_best_match(name, choices):
+    """
+    Encontra a melhor correspondência para um nome em uma lista de opções.
+
+    Args:
+        name: Nome a ser pesquisado
+        choices: Lista de opções para comparação
+
+    Returns:
+        Melhor correspondência ou 'Desconhecido'
+    """
+    if not name:
+        return 'Desconhecido'
+    match, score, _ = process.extractOne(name, choices)
+    return match if score > 80 else 'Desconhecido'
 
 
-def extrair_texto_apos_padrao(texto, padrao):
-    """Extrai texto após um padrão específico."""
-    resultado = re.search(padrao, texto)
-    if resultado:
-        return texto[resultado.end():].strip()
+def extract_text_from_pdf(pdf_path):
+    """
+    Extrai texto de um arquivo PDF.
+
+    Args:
+        pdf_path: Caminho para o arquivo PDF
+
+    Returns:
+        Texto extraído do PDF
+    """
+    text = ""
+    try:
+        with open(pdf_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            for page in reader.pages:
+                text += page.extract_text()
+    except Exception as e:
+        print(f"Erro ao ler PDF {pdf_path}: {e}")
+    return text
+
+
+def find_pa_name_in_text(text):
+    """
+    Encontra o nome do PA no texto extraído do PDF.
+
+    Args:
+        text: Texto do PDF
+
+    Returns:
+        Nome do PA encontrado ou None
+    """
+    patterns = [
+        r'PA\s+([^\.,:;\n]+)',
+        r'Projeto de Assentamento\s+([^\.,:;\n]+)',
+        r'P\.A\.\s+([^\.,:;\n]+)'
+    ]
+
+    for pattern in patterns:
+        matches = re.finditer(pattern, text, re.IGNORECASE)
+        for match in matches:
+            pa_name = match.group(1).strip()
+            if pa_name:
+                return pa_name
     return None
 
 
-def extrair_data(texto):
-    """Extrai uma data do texto."""
-    padrao = r"\d{2}/\d{2}/\d{4}"
-    resultado = re.search(padrao, texto)
-    if resultado:
-        return resultado.group()
-    return None
+def normalize_text(text):
+    """
+    Normaliza o texto removendo acentos e convertendo para minúsculas.
+
+    Args:
+        text: Texto a ser normalizado
+
+    Returns:
+        Texto normalizado
+    """
+    if not text:
+        return ""
+    return unidecode.unidecode(text.lower().strip())
 
 
-def extrair_data_pdf(caminho_pdf):
-    """Extrai a data de um PDF."""
-    with open(caminho_pdf, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        num_paginas = len(reader.pages)
-        texto_ultima_pagina = reader.pages[num_paginas - 1].extract_text()
-        padrao = r"Documento assinado eletronicamente por "
-        texto_apos_padrao = extrair_texto_apos_padrao(texto_ultima_pagina, padrao)
-        if texto_apos_padrao:
-            return extrair_data(texto_apos_padrao)
-    return None
+def find_best_match_in_csv(pa_name, df_mapping):
+    """
+    Encontra a melhor correspondência para o nome do PA no DataFrame.
+
+    Args:
+        pa_name: Nome do PA a ser pesquisado
+        df_mapping: DataFrame com os dados de mapeamento
+
+    Returns:
+        Tupla com assentamento e nome_pa encontrados ou (None, None)
+    """
+    if not pa_name:
+        return None, None
+
+    normalized_pa = normalize_text(pa_name)
+    choices = df_mapping['Assentamento'].tolist()
+    normalized_choices = [normalize_text(choice) for choice in choices]
+
+    match = process.extractOne(normalized_pa, normalized_choices)
+    if match and match[1] > 80:
+        index = normalized_choices.index(match[0])
+        return (
+            df_mapping.iloc[index]['Assentamento'], 
+            df_mapping.iloc[index]['nomePA']
+        )
+    return None, None
 
 
-def extrair_tecnico_pdf(caminho_pdf):
-    """Extrai o nome do técnico de um PDF."""
-    with open(caminho_pdf, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        num_paginas = len(reader.pages)
-        texto_ultima_pagina = reader.pages[num_paginas - 1].extract_text()
-        padrao = r"Documento assinado eletronicamente por (.+?)\d"
-        resultado = re.search(padrao, texto_ultima_pagina)
-        if resultado:
-            nome_tecnico = resultado.group(1).strip()
-            return nome_tecnico
-    return None
+def preprocess_assentamento(assentamento):
+    """
+    Pré-processa o nome do assentamento aplicando substituições conhecidas.
+
+    Args:
+        assentamento: Nome do assentamento a ser processado
+
+    Returns:
+        Nome do assentamento processado
+    """
+    substitutions = {
+        "PASAOJOAOMARIA": "SÃO JOÃO MARIA"
+    }
+    return substitutions.get(assentamento, assentamento)
 
 
-def extrair_assentamento_pdf(caminho_pdf):
-    """Extrai o assentamento de um PDF."""
-    with open(caminho_pdf, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        texto_primeira_pagina = reader.pages[0].extract_text()
-        padrao = r"PA\s*(.+?)\s*PR0"
-        resultado = re.search(padrao, texto_primeira_pagina)
-        if resultado:
-            return resultado.group(1).strip()
-    return None
+def rename_unknown_settlement_files(directory_path, df_mapping):
+    """
+    Renomeia arquivos com 'UnknownSettlement' no nome.
+
+    Args:
+        directory_path: Diretório onde os arquivos estão
+        df_mapping: DataFrame com os dados de mapeamento
+    """
+    print("\nIniciando análise de arquivos com UnknownSettlement...")
+
+    for root, _, files in os.walk(directory_path):
+        for filename in files:
+            if 'UnknownSettlement' in filename and filename.endswith('.pdf'):
+                full_path = os.path.join(root, filename)
+                print(f"\nAnalisando arquivo: {filename}")
+
+                pdf_text = extract_text_from_pdf(full_path)
+                pa_name = find_pa_name_in_text(pdf_text)
+
+                if pa_name:
+                    print(f"Nome do PA encontrado no PDF: {pa_name}")
+
+                    assentamento, nome_pa = find_best_match_in_csv(
+                        pa_name, df_mapping
+                    )
+
+                    if assentamento and nome_pa:
+                        new_filename = filename.replace(
+                            'UnknownSettlement', nome_pa
+                        )
+                        new_full_path = os.path.join(root, new_filename)
+
+                        try:
+                            shutil.move(full_path, new_full_path)
+                            print(
+                                f"Arquivo renomeado com sucesso para: "
+                                f"{new_filename}"
+                            )
+                        except Exception as e:
+                            print(f"Erro ao renomear arquivo: {e}")
+                    else:
+                        print(
+                            f"Não foi encontrada correspondência adequada no CSV "
+                            f"para: {pa_name}"
+                        )
+                else:
+                    print(
+                        f"Não foi possível encontrar o nome do PA no arquivo PDF"
+                    )
 
 
-def verificar_tipo_laudo(nome_arquivo):
-    """Verifica o tipo de laudo com base no nome do arquivo."""
-    if 'DecBeneficiario' in nome_arquivo:
-        return 'Laudo Declaração de Beneficiário'
-    elif 'SimpBeneficiario' in nome_arquivo:
-        return 'Laudo Simplificado de Beneficiário'
-    elif 'CompBeneficiario' in nome_arquivo:
-        return 'Laudo Completo de Beneficiário'
-    elif 'DecOcupante' in nome_arquivo:
-        return 'Laudo Declaração de Ocupante'
-    elif 'SimpOcupante' in nome_arquivo:
-        return 'Laudo Simplificado de Ocupante'
-    elif 'CompOcupante' in nome_arquivo:
-        return 'Laudo Completo de Ocupante'
-    elif 'LoteVago' in nome_arquivo:
-        return 'Laudo Lote Vago'
-    return None
+def process_pdfs_in_directory(directory_path, output_path, df_mapping):
+    """
+    Processa PDFs em um diretório e gera relatório Excel.
 
+    Args:
+        directory_path: Diretório onde os PDFs estão
+        output_path: Caminho para o arquivo Excel de saída
+        df_mapping: DataFrame com os dados de mapeamento
+    """
+    tipo_documento_map = {
+        'analiseRegularizacao': 'Análise para regularização',
+        'relatorioConformidadesRegularizacao': 
+            'Relatório de conformidades para regularização',
+        'relatorioConformidadesTitulacao': 
+            'Relatório de conformidades para titulação',
+        'solicitacaoDocComplementar': 
+            'Solicitação de documentação complementar'
+    }
 
-def extrair_lxx(nome_arquivo):
-    """Extrai o número do lote (LXX) do nome do arquivo."""
-    padrao = r"L(\d+)"
-    resultado = re.search(padrao, nome_arquivo)
-    if resultado:
-        return resultado.group(1)
-    return None
+    valid_prefixes = set(tipo_documento_map.keys())
+    data = []
 
+    print(f"\nBuscando arquivos PDF em: {directory_path}")
 
-def carregar_datas(csv_path):
-    """Carrega datas de mutirão e vistoria de um arquivo CSV."""
-    # Lê o CSV sem converter datas
-    df = pd.read_csv(csv_path)
+    for root, _, files in os.walk(directory_path):
+        pdf_files = [f for f in files if f.endswith('.pdf')]
+        print(f"\nEncontrados {len(pdf_files)} arquivos PDF em: {root}")
 
-    # Garante que a coluna 'data' esteja no formato correto (DD/MM/YYYY)
-    # Primeiro converte para datetime e depois para string no formato desejado
-    df['data'] = pd.to_datetime(df['data'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')
+        for filename in pdf_files:
+            check_filename = filename[2:] if filename.startswith('2_') else filename
 
-    # Obtém as listas de datas para cada tipo
-    datas_mtr = df[df['tipo'] == 'mutirao']['data'].tolist()
-    datas_vl = df[df['tipo'] == 'vistoria']['data'].tolist()
+            if any(check_filename.startswith(prefix) for prefix in valid_prefixes):
+                try:
+                    print(f"Processando: {filename}")
+                    (
+                        tipo_documento, 
+                        assentamento, 
+                        nome_t1, 
+                        autenticador, 
+                        is_second_report
+                    ) = extract_info_from_filename(filename)
 
-    # Garante que não há espaços extras
-    datas_mtr = [d.strip() for d in datas_mtr]
-    datas_vl = [d.strip() for d in datas_vl]
+                    assentamento = preprocess_assentamento(assentamento)
+                    tipo_documento_full = tipo_documento_map.get(
+                        tipo_documento, tipo_documento
+                    )
+                    if is_second_report:
+                        tipo_documento_full += ' (2º Relatório)'
 
-    return datas_mtr, datas_vl
+                    objetivo = ''
+                    if 'Regularizacao' in tipo_documento:
+                        objetivo = 'Regularização'
+                    elif 'Titulacao' in tipo_documento:
+                        objetivo = 'Titulação'
 
+                    best_assentamento = find_best_match(
+                        assentamento, df_mapping['Assentamento']
+                    )
+                    municipio_row = df_mapping[
+                        df_mapping['Assentamento'] == best_assentamento
+                    ]
 
-def carregar_municipios(csv_path):
-    """Carrega o mapeamento de assentamentos para municípios e códigos SIPRA."""
-    df = pd.read_csv(csv_path)
-    municipios_map = dict(zip(df['Assentamento'], df['Município']))
-    codsipra_map = dict(zip(df['Assentamento'], df['Codsipra']))
-    return municipios_map, codsipra_map
+                    municipio = (
+                        municipio_row['Município'].values[0] 
+                        if not municipio_row.empty else 'Desconhecido'
+                    )
+                    codsipra = (
+                        municipio_row['Codsipra'].values[0] 
+                        if not municipio_row.empty else 'Desconhecido'
+                    )
+
+                    data.append({
+                        'Tipo de documento PGT': tipo_documento_full,
+                        'Assentamento': best_assentamento,
+                        'Município': municipio,
+                        'Código SIPRA': codsipra,
+                        'Nome T1': nome_t1,
+                        'Autenticador': autenticador,
+                        'Objetivo': objetivo,
+                        'Segundo Relatório': 'Sim' if is_second_report else 'Não'
+                    })
+                except ValueError as e:
+                    print(f"Erro ao processar {filename}: {e}")
+                except Exception as e:
+                    print(f"Erro inesperado ao processar {filename}: {e}")
+
+    print(f"\nTotal de arquivos processados com sucesso: {len(data)}")
+
+    if not data:
+        print("Nenhum arquivo válido foi processado. Verifique os critérios de seleção.")
+        return
+
+    df = pd.DataFrame(data)
+    print("\nColunas no DataFrame:", df.columns.tolist())
+
+    try:
+        df = df.sort_values(['Assentamento', 'Nome T1', 'Tipo de documento PGT'])
+        print("DataFrame ordenado com sucesso")
+    except KeyError as e:
+        print(f"Erro ao ordenar DataFrame: {e}")
+        print("Continuando sem ordenação...")
+
+    try:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        if os.path.exists(output_path):
+            try:
+                os.remove(output_path)
+                print(f"Arquivo existente removido: {output_path}")
+                time.sleep(1)
+            except Exception as e:
+                print(f"Aviso: Não foi possível remover o arquivo existente: {e}")
+
+        try:
+            with pd.ExcelWriter(output_path, engine='openpyxl', mode='w') as writer:
+                df.to_excel(writer, index=False)
+            print(f'\nPlanilha gerada com sucesso: {output_path}')
+        except Exception as e:
+            print(f"Erro ao salvar com ExcelWriter: {e}")
+            df.to_excel(output_path, index=False, engine='openpyxl')
+            print(
+                f'\nPlanilha gerada com sucesso (método alternativo): '
+                f'{output_path}'
+            )
+
+        if os.path.exists(output_path):
+            print(f'Verificação: arquivo existe no caminho especificado')
+        else:
+            print(f"Aviso: Arquivo não encontrado após salvamento")
+
+    except Exception as e:
+        print(f"Erro ao manipular arquivo de saída: {e}")
+        alternative_path = os.path.join(
+            os.path.dirname(output_path), 'contPGT_backup.xlsx'
+        )
+        try:
+            df.to_excel(alternative_path, index=False, engine='openpyxl')
+            print(f"Planilha salva em local alternativo: {alternative_path}")
+        except Exception as e2:
+            print(f"Erro ao salvar no local alternativo: {e2}")
+
+    # Após processar todos os arquivos, chama a função para renomear arquivos
+    # com UnknownSettlement
+    rename_unknown_settlement_files(directory_path, df_mapping)
 
 
 def main():
-    """Função principal."""
-    pasta_pdf = 'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
-    caminho_csv_datas = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                         '03_equipeGEOTI/08_automacoes/01_SO/01_datasModalidade.csv')
-    caminho_csv_municipios = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                             '03_equipeGEOTI/08_automacoes/01_SO/'
-                             '01_codsipraPAsMunicipios.csv')
-    caminho_csv_tecnicos = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                           '03_equipeGEOTI/08_automacoes/01_SO/01_nomesTecnicos.csv')
-    resultados = []
+    """Função principal que executa o processamento completo."""
+    # Caminhos dos arquivos
+    directory_path = (
+        'D:/ufpr.br/Intranet do LAGEAMB - TED-INCRA/02_SO/11_municipiosPAs'
+    )
+    output_path = (
+        'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/'
+        '08_automacoes/02_SO/02_contPGT.xlsx'
+    )
+    csv_mapping_file = (
+        'D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/03_equipeGEOTI/'
+        '08_automacoes/02_SO/02_codsipraPAsMunicipiosNomePAs.csv'
+    )
 
-    # Carregar padronização dos nomes dos técnicos
-    padronizacao_tecnicos = carregar_padronizacao_tecnicos(caminho_csv_tecnicos)
+    print("\n=== Iniciando processamento ===")
+    print(f"Diretório de entrada: {directory_path}")
+    print(f"Arquivo de saída: {output_path}")
+    print(f"Arquivo de mapeamento: {csv_mapping_file}")
 
-    # Carregar datas de mutirão e vistoria
-    datas_mtr, datas_vl = carregar_datas(caminho_csv_datas)
+    try:
+        df_mapping = load_mapping(csv_mapping_file)
+        process_pdfs_in_directory(directory_path, output_path, df_mapping)
+    except Exception as e:
+        print(f"\nErro crítico durante a execução: {e}")
 
-    # Carregar mapeamento de assentamentos para municípios e códigos SIPRA
-    municipios_map, codsipra_map = carregar_municipios(caminho_csv_municipios)
-
-    # Trechos que devem estar no nome do arquivo
-    trechos_validos = [
-        "DecOcupante", "SimpOcupante", "CompOcupante",
-        "DecBeneficiario", "SimpBeneficiario", "CompBeneficiario",
-        "LoteVago"
-    ]
-
-    for root, dirs, files in os.walk(pasta_pdf):
-        for arquivo in files:
-            if arquivo.endswith('.pdf') and any(
-                    trecho in arquivo for trecho in trechos_validos):
-                caminho_completo = os.path.join(root, arquivo)
-                data = extrair_data_pdf(caminho_completo)
-                if data is None:
-                    print(f"Falha ao extrair data do arquivo: {caminho_completo}")
-                    continue
-
-                # Garante que a data extraída está no formato correto e sem espaços extras
-                data = data.strip() if data else None
-
-                tipo_laudo = verificar_tipo_laudo(arquivo)
-                lxx = extrair_lxx(arquivo)
-                tecnico = extrair_tecnico_pdf(caminho_completo)
-                tecnico = padronizar_nome_tecnico(tecnico, padronizacao_tecnicos)
-                assentamento = extrair_assentamento_pdf(caminho_completo)
-
-                # Obter o município e o código SIPRA correspondente ao assentamento
-                municipio = municipios_map.get(assentamento, "Desconhecido")
-                codigo_sipra = codsipra_map.get(assentamento, "Desconhecido")
-
-                modalidade = None
-                if data in datas_mtr:
-                    modalidade = "MUTIRÃO"
-                elif data in datas_vl:
-                    modalidade = "VISTORIA IN LOCO"
-
-                # Para depuração - remova ou comente estas linhas após resolver o problema
-                if assentamento and "Tibagi" in assentamento and not modalidade:
-                    print(f"Data do PDF: '{data}' não encontrada nas datas de vistoria")
-                    print(f"Datas de vistoria disponíveis: {datas_vl[:5]}...")
-
-                resultados.append({
-                    'Código SIPRA': codigo_sipra,
-                    'Município': municipio,
-                    'Assentamento': assentamento,
-                    'Lote': lxx,
-                    'Arquivo': arquivo,
-                    'Data': data,
-                    'Tipo de Laudo': tipo_laudo,
-                    'Técnico': tecnico,
-                    'Modalidade': modalidade
-                })
-
-    df = pd.DataFrame(resultados)
-
-    if not df.empty:
-        caminho_arquivo_excel = ('D:/ufpr.br/Intranet do LAGEAMB - TRANSVERSAIS/'
-                                '03_equipeGEOTI/08_automacoes/01_SO/'
-                                '01_laudos_SO_infos.xlsx')
-
-        # Exclua o arquivo existente, se houver
-        if os.path.exists(caminho_arquivo_excel):
-            os.remove(caminho_arquivo_excel)
-
-        # Reordenando as colunas
-        df = df[[
-            'Código SIPRA', 'Município', 'Assentamento', 'Lote',
-            'Arquivo', 'Tipo de Laudo', 'Data', 'Técnico', 'Modalidade'
-        ]]
-
-        df.to_excel(caminho_arquivo_excel, index=False)
-
-        print("Dados extraídos e salvos em", caminho_arquivo_excel)
-    else:
-        print("Nenhum dado foi extraído dos PDFs.")
+    print("\n=== Processamento finalizado ===")
 
 
 if __name__ == "__main__":
