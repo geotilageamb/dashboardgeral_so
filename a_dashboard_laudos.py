@@ -1,4 +1,4 @@
-"""Dashboard para visualização de dados de laudos de supervisão ocupacional."""
+"""Dashboard para visualização de dados de laudos de supervisão ocupacional - Meta 2.1"""
 
 import unicodedata
 from datetime import datetime
