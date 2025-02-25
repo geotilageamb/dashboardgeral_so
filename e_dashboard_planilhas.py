@@ -1,12 +1,18 @@
-import streamlit as st
+"""Dashboard para visualização de produtos da meta 2.4 - Planilhas de monitoramento."""
+
 import pandas as pd
 import plotly.express as px
+import streamlit as st
+
 
 @st.cache_data
 def load_data():
+    """Carrega os dados do arquivo Excel e armazena em cache."""
     return pd.read_excel('05_contPlanilhas.xlsx')
 
+
 def show_dashboard():
+    """Exibe o dashboard com os dados de planilhas de monitoramento."""
     st.header("Produto da meta 2.4")
     data_planilhas = load_data()
 
@@ -16,7 +22,9 @@ def show_dashboard():
     # Cálculo dos totais
     total_municipios = data_planilhas['Município'].nunique()
     total_assentamentos = len(data_planilhas)
-    total_com_planilha = len(data_planilhas[data_planilhas["Planilha de monitoramento"].str.strip() == "Sim"])
+    total_com_planilha = len(
+        data_planilhas[data_planilhas["Planilha de monitoramento"].str.strip() == "Sim"]
+    )
 
     # Layout em colunas para os totais
     col1, col2, col3 = st.columns(3)
@@ -33,10 +41,12 @@ def show_dashboard():
     planilhas_por_municipio = data_planilhas.groupby('Município').size().reset_index()
     planilhas_por_municipio.columns = ['Município', 'Quantidade']
 
-    fig = px.pie(planilhas_por_municipio, 
-                 values='Quantidade', 
-                 names='Município',
-                 title='Distribuição de Planilhas por Município')
+    fig = px.pie(
+        planilhas_por_municipio, 
+        values='Quantidade', 
+        names='Município',
+        title='Distribuição de Planilhas por Município'
+    )
 
     # Atualiza o layout para melhor visualização
     fig.update_traces(textposition='inside', textinfo='percent+label')
@@ -54,8 +64,11 @@ def show_dashboard():
     )
 
     if municipio_selecionado:
-        filtered_data = data_planilhas[data_planilhas["Município"] == municipio_selecionado]
+        filtered_data = data_planilhas[
+            data_planilhas["Município"] == municipio_selecionado
+        ]
         st.dataframe(filtered_data)
+
 
 if __name__ == "__main__":
     show_dashboard()
