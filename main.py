@@ -10,6 +10,16 @@ from e_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
 
 def main():
     """Função principal que configura e exibe o dashboard."""
+    # CSS para ocultar o botão do GitHub
+    hide_github_button = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        </style>
+    """
+    st.markdown(hide_github_button, unsafe_allow_html=True)
+
     st.title("Dashboard Supervisão Ocupacional - TED INCRA/UFPR")
 
     # Criação das abas
