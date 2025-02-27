@@ -10,7 +10,9 @@ def check_authentication():
     Returns:
         bool: True se o usuário estiver autenticado, False caso contrário.
     """
-    return st.experimental_user.is_logged_in
+    # Correção: verificar se o email existe no objeto experimental_user
+    # Um usuário autenticado sempre terá um email definido
+    return hasattr(st.experimental_user, "email") and st.experimental_user.email != ""
 
 
 def show_login_screen():
@@ -37,9 +39,15 @@ def show_user_info():
     Exibe informações do usuário logado e botão de logout no sidebar.
     """
     st.sidebar.markdown("---")
-    st.sidebar.write(f"**Usuário:** {st.experimental_user.email}")
+
+    # Verifica se o email existe antes de exibi-lo
+    if hasattr(st.experimental_user, "email"):
+        st.sidebar.write(f"**Usuário:** {st.experimental_user.email}")
+    elif hasattr(st.experimental_user, "name"):
+        st.sidebar.write(f"**Usuário:** {st.experimental_user.name}")
+    else:
+        st.sidebar.write("**Usuário autenticado**")
 
     if st.sidebar.button("Sair do Sistema"):
         st.logout()
         st.rerun()
-
