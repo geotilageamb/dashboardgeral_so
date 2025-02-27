@@ -7,57 +7,6 @@ from c_dashboard_docs_recebidos import show_dashboard as show_dashboard_docs_rec
 from d_dashboard_pareceres import show_dashboard as show_dashboard_pareceres
 from e_dashboard_planilhas import show_dashboard as show_dashboard_planilhas
 
-# Configuração da página - DEVE ser a primeira chamada Streamlit
-st.set_page_config(
-    page_title="Dashboard Supervisão Ocupacional - TED INCRA/UFPR",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': None,
-        'Report a bug': None,
-        'About': None
-    }
-)
-
-# CSS para ocultar elementos do Streamlit
-hide_streamlit_elements = """
-    <style>
-    /* Oculta o menu principal, rodapé e cabeçalho */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-
-    /* Oculta especificamente o ícone do GitHub no canto inferior direito */
-    .stActionButton, .stGithubButton {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* Oculta todos os elementos no canto inferior direito */
-    section[data-testid="stBottomRightButtons"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-
-    /* Oculta qualquer ícone circular no canto inferior */
-    .e1wbw7k90, .css-1p1nwyz, .css-1offfwp {
-        display: none !important;
-    }
-
-    /* Oculta o botão de compartilhamento/GitHub */
-    button[kind="secondary"] {
-        display: none !important;
-    }
-
-    /* Oculta qualquer elemento com ícone circular */
-    [data-testid="baseButton-headerNoPadding"] {
-        display: none !important;
-    }
-    </style>
-"""
-st.markdown(hide_streamlit_elements, unsafe_allow_html=True)
-
 
 def main():
     """Função principal que configura e exibe o dashboard."""
