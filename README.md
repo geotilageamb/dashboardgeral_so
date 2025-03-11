@@ -1,4 +1,5 @@
-# Documentação sobre as metas e produtos da Supervisão Ocupacional (SO) conforme Plano de Trabalho de 09/2024 e sobre os códigos python e planilhas que alimentam esses indicadores.
+# Documentação sobre as metas e produtos da Supervisão Ocupacional (SO) conforme Plano de Trabalho de 09/2024 e 
+sobre os códigos python e planilhas que alimentam esses indicadores.
 
 
 ## Nome original das planilhas geradas pelos códigos python que extraem as infomações
@@ -36,8 +37,10 @@ Meta 2.4 - Produto 2.4.1
 ├── 2.3.1 Parecer com vistas à atualização e regularização cadastral de beneficiários do PNRA (Total a atingir: 4239)
 └── 2.3.2 Relatório com vistas ao desbloqueio de beneficiários do PNRA junto ao TCU (Total a atingir: 500)
 
-### Meta 2.4 (Planejar, monitorar e sistematizar as supervisões ocupacionais e as respectivas atualizações de beneficiários e regularizações de ocupantes durante o período de atendimento)
-└── 2.4.1 Planilha de monitoramento das demandas levantadas, circunstâncias encontradas durante a supervisão, movimentações dos processos e encaminhamentos (Total a atingir: 129)
+### Meta 2.4 (Planejar, monitorar e sistematizar as supervisões ocupacionais e as respectivas atualizações de
+beneficiários e regularizações de ocupantes durante o período de atendimento)
+└── 2.4.1 Planilha de monitoramento das demandas levantadas, circunstâncias encontradas durante a supervisão,
+movimentações dos processos e encaminhamentos (Total a atingir: 129)
 
 ### Legenda
 ├── Verde - o respectivo documento segue sendo o vigente
@@ -55,7 +58,8 @@ Meta 2.4 - Produto 2.4.1
 ├── Tipo de Laudo (tipo de laudo extraído de dentro do próprio laudo)
 ├── Data (data de elaboração do laudo extraída de dentro do próprio laudo)
 ├── Técnico (nome do técnico que elaborou o laudo extraído de dentro do próprio laudo)
-└── Modalidade (modalidade da supervisão ocupacional, que pode ser vistoria in loco ou mutirão, informada cruzada entre a data do laudo e datas dos campos da SO no CSV)
+└── Modalidade (modalidade da supervisão ocupacional, que pode ser vistoria in loco ou mutirão,
+informada cruzada entre a data do laudo e datas dos campos da SO no CSV)
 
 ### Planilha 2 (Meta 2.2)
 ├── Tipo de documento PGT (tipo do documento conforme qual produto ele representa, extraído de dentro do próprio documento e renomeado por código python)
@@ -65,7 +69,8 @@ Meta 2.4 - Produto 2.4.1
 ├── Nome T1 (primeiro nome do Titular 1 do lote, extraído de dentro do próprio documento e colocado também no nome do arquivo PDF para facilitar identificação pela SO)
 ├── Autenticador (código autenticador do documento extraído de dentro do próprio documento)
 ├── Objetivo (informação para diferenciar relatórios de conformidade que são para titulação ou regularização, extraído de dentro do próprio documento)
-└── Segundo Relatório (booleano "Sim/Não" para identificar segundos relatórios de conformidades para o mesmo assentado, o que representa um produto por si só, informação feita identificando se já havia um relatório dentro da pasta)
+└── Segundo Relatório (booleano "Sim/Não" para identificar segundos relatórios de conformidades para o mesmo assentado,
+o que representa um produto por si só, informação feita identificando se já havia um relatório dentro da pasta)
 
 ### Planilha 3 (Meta 2.2 - Produto 2.2.1 - Etapa 2.2.1.1)
 ├── Caminho (caminho completo do arquivo)
@@ -98,7 +103,8 @@ Meta 2.4 - Produto 2.4.1
 └── Copia a planilha gerada pelo código 01_1_infosLaudosModalidade.py do SharePoint para o GitHub (bibliotecas shutil e os)
 
 ### 02_1_renomeador_docsPGTWEB.py
-└── Renomeia os arquivos referentes a meta 2.2 conforme regras definidas (bibliotecas os, pandas, PyPDF2, re ,shutil, unidecode, thefuzz, collections e datetime)
+└── Renomeia os arquivos referentes a meta 2.2 conforme regras definidas (bibliotecas os, pandas, PyPDF2, re,
+shutil, unidecode, thefuzz, collections e datetime)
 
 ### 02_2_quantificadorDocsPGTWEB.py
 └── Extrai as informações e gera a Planilha 2 (bibliotecas os, re, time, pandas, thefuzz)
@@ -137,7 +143,8 @@ Meta 2.4 - Produto 2.4.1
 └── Faz a aba do dashboard referente a meta 2.2 (bibliotecas pandas, plotly.express, plotly.graph_objects e streamlit)
 
 ### c_dashboard_docs_recebidos.py
-└── Faz a aba do dashboard referente a meta 2.2 - produto 2.2.1 - etapa 2.2.1.1 (bibliotecas unicodedata, pandas, plotly.express e streamlit)
+└── Faz a aba do dashboard referente a meta 2.2 - produto 2.2.1 - etapa 2.2.1.1 (bibliotecas unicodedata, pandas,
+plotly.express e streamlit)
 
 ### d_dashboard_pareceres.py
 └── Faz a aba do dashboard referente a meta 2.3 (bibliotecas pandas, plotly.express, plotly.graph_objects e streamlit)
