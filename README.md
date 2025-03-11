@@ -52,9 +52,9 @@ Meta 2.4 - Produto 2.4.1
 
 ### Legenda
 
-├── Verde - o respectivo documento segue sendo o vigente
+├── Verde (o respectivo documento segue sendo o vigente)
 
-└── Laranja - há previsão de mudança no documento padrão
+└── Laranja (há previsão de mudança no documento padrão)
 
 
 ## Documentação sobre as colunas das planilhas
