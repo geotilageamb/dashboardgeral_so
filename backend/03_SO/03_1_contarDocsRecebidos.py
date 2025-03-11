@@ -229,7 +229,7 @@ class DataProcessor:
         return pd.DataFrame(
             data,
             columns=[
-                "Caminho Completo", "Município", "Assentamento",
+                "Caminho", "Município", "Assentamento",
                 "Código SIPRA", "Arquivo", "Lote"
             ]
         )
