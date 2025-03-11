@@ -1,3 +1,5 @@
+# Link para o dashboard: <https://so-dashboardgeral.streamlit.app>
+
 # Documentação sobre as metas e produtos da Supervisão Ocupacional (SO) conforme Plano de Trabalho de 09/2024 e sobre os códigos python e planilhas que alimentam esses indicadores.
 
 
