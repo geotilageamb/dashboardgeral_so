@@ -24,11 +24,14 @@ Meta 2.4 - Produto 2.4.1
 
 ### Meta 2.1 (Supervisão Ocupacional de lotes em Projetos de Assentamento de Reforma Agrária)
 ├── 2.1.1 Laudo de supervisão ocupacional in loco (Total a atingir: 4739)
+
 └── 2.1.2 Laudo de supervisão ocupacional mutirão (Total a atingir: 2746)
 
 ### Meta 2.2 (Analisar solicitações de regularização de ocupantes)
 ├── 2.2.1 Relatórios de conformidades inseridos nos respectivos processos SEI de ocupantes irregulares (Total a atingir: 2246)
+
 │   └── 2.2.1.1 Coleta suplementar de documentos via canais de atendimento (Total a atingir: X)
+
 ├── 2.2.2 Notificação de documentos pendentes de ocupantes irregulares (Total a atingir: 674)
 ├── 2.2.3 Relatório de conformidades de ocupantes irregulares notificados (Total a atingir: 337)
 └── 2.2.4 Parecer favorável ou desfavorável à regularização via PGT ou assinado e inserido no SEI (Total a atingir: 1622)
