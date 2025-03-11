@@ -23,25 +23,31 @@ Meta 2.4 - Produto 2.4.1
 ## Metas e produtos da SO conforme Plano de Trabalho de 09/2024
 
 ### Meta 2.1 (Supervisão Ocupacional de lotes em Projetos de Assentamento de Reforma Agrária)
+
 ├── 2.1.1 Laudo de supervisão ocupacional in loco (Total a atingir: 4739)
 
 └── 2.1.2 Laudo de supervisão ocupacional mutirão (Total a atingir: 2746)
 
 ### Meta 2.2 (Analisar solicitações de regularização de ocupantes)
+
 ├── 2.2.1 Relatórios de conformidades inseridos nos respectivos processos SEI de ocupantes irregulares (Total a atingir: 2246)
 
 │   └── 2.2.1.1 Coleta suplementar de documentos via canais de atendimento (Total a atingir: X)
 
 ├── 2.2.2 Notificação de documentos pendentes de ocupantes irregulares (Total a atingir: 674)
+
 ├── 2.2.3 Relatório de conformidades de ocupantes irregulares notificados (Total a atingir: 337)
+
 └── 2.2.4 Parecer favorável ou desfavorável à regularização via PGT ou assinado e inserido no SEI (Total a atingir: 1622)
 
 ### Meta 2.3 (Analisar a atualização e regularização cadastral de beneficiários)
+
 ├── 2.3.1 Parecer com vistas à atualização e regularização cadastral de beneficiários do PNRA (Total a atingir: 4239)
+
 └── 2.3.2 Relatório com vistas ao desbloqueio de beneficiários do PNRA junto ao TCU (Total a atingir: 500)
 
-### Meta 2.4 (Planejar, monitorar e sistematizar as supervisões ocupacionais e as respectivas atualizações de
-beneficiários e regularizações de ocupantes durante o período de atendimento)
+### Meta 2.4 (Planejar, monitorar e sistematizar as supervisões ocupacionais e as respectivas atualizações de beneficiários e regularizações de ocupantes durante o período de atendimento)
+
 └── 2.4.1 Planilha de monitoramento das demandas levantadas, circunstâncias encontradas durante a supervisão,
 movimentações dos processos e encaminhamentos (Total a atingir: 129)
 
